@@ -1,0 +1,39 @@
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, sans-serif;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+h1, h2, h3 {
+  color: #006992;
+  border-bottom: 1px solid #cde;
+  padding-bottom: 0.3rem;
+}
+
+a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  background-color: #eef;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
+ul {
+  padding-left: 1.2rem;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2rem 0;
+}
