@@ -1,4 +1,6 @@
+<link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" href="style.css">
+
 
 # 💙 Bienvenido a CapiniMX
 
