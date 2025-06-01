@@ -4,7 +4,13 @@ Bienvenido al repositorio oficial de medios de **CapiniMX** — Centro de Atenci
 
 Este repositorio tiene como objetivo almacenar, organizar y preparar **fotos, videos y recursos gráficos** que se usarán en el desarrollo y actualización del sitio web oficial: [capinimx.com](https://capinimx.com) *(próximamente)*.
 
----
+────────────
+## ℹ️ Preguntas Frecuentes
+
+Resolvemos dudas sobre terapias, evaluaciones, estimulación temprana, TEA, TDAH y más.  
+👉 [Lee todas nuestras FAQs aquí](FAQ.md)
+
+────────────
 
 ## 📸 Contenido del repositorio
 
