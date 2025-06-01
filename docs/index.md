@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="style.css">
+
 # 💙 Bienvenido a CapiniMX
 
 Centro de Atención Psicológica Integral y Neurodesarrollo Infantil
