@@ -1,21 +1,25 @@
+/* -------- CapiniMX Style -------- */
 body {
   font-family: "Segoe UI", Roboto, Helvetica, sans-serif;
   max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
-  background-color: #f8f9fa;
+  background-color: #fcfcfc;
   color: #333;
+  line-height: 1.6;
 }
 
 h1, h2, h3 {
-  color: #006992;
-  border-bottom: 1px solid #cde;
+  color: #00aebb; /* Turquesa Capini */
+  border-bottom: 1px solid #f7c5d3; /* Rosa claro */
   padding-bottom: 0.3rem;
+  margin-top: 2rem;
 }
 
 a {
-  color: #0077cc;
+  color: #00aebb;
   text-decoration: none;
+  font-weight: 500;
 }
 
 a:hover {
@@ -23,17 +27,28 @@ a:hover {
 }
 
 code {
-  background-color: #eef;
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
+  background-color: #eef8fa;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 90%;
 }
 
 ul {
-  padding-left: 1.2rem;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 hr {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #eee;
   margin: 2rem 0;
+}
+
+blockquote {
+  border-left: 4px solid #f7c5d3;
+  padding-left: 1rem;
+  color: #666;
+  background-color: #fff6f9;
+  margin: 1.5rem 0;
 }
