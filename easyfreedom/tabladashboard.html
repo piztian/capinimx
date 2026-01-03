@@ -326,6 +326,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 15px;
+            margin-bottom: 20px;
         }
         
         .task-card {
@@ -387,6 +388,15 @@
             font-weight: bold;
         }
         
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding-top: 15px;
+            border-top: 1px solid #ECF0F1;
+        }
+        
         /* BUTTONS */
         .btn {
             padding: 12px 25px;
@@ -432,6 +442,22 @@
         
         .btn-logout:hover {
             background: #C0392B;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #3498DB, #2980B9);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-save.loading {
+            opacity: 0.7;
+            pointer-events: none;
         }
         
         /* COMMUNITY SECTION */
@@ -797,8 +823,8 @@
                 <div class="lesson-header">
                     <h3 id="leccionTitulo">Lección 1.1: ¿Por qué fumas?</h3>
                     <div class="lesson-meta">
-                        <span>⏱️ 5 min</span>
-                        <span>📍 Semana 1</span>
+                        <span>⏱️ <span id="leccionTiempo">5</span> min</span>
+                        <span>📍 Semana <span id="leccionSemana">1</span></span>
                     </div>
                 </div>
                 <p id="leccionDescripcion">Entender la nicotina y cómo funciona la adicción es el primer paso para tu libertad.</p>
@@ -822,6 +848,13 @@
             
             <div class="tasks-grid" id="tasksGrid">
                 <!-- Las tareas se cargan dinámicamente -->
+            </div>
+            
+            <!-- BOTÓN GUARDAR PROGRESO -->
+            <div class="task-actions">
+                <button class="btn btn-save" id="btnGuardarProgreso" onclick="guardarProgreso()">
+                    💾 Guardar Progreso
+                </button>
             </div>
         </section>
         
@@ -879,7 +912,74 @@
         // Estado global
         let usuarioActual = null;
         let tareasDelDia = [];
-        let leccionActual = null;
+        let leccionActualIndice = 0;
+        let lecciones = [];
+        
+        // Lecciones de ejemplo
+        const leccionesData = [
+            {
+                id: '1.1',
+                titulo: 'Lección 1.1: ¿Por qué fumas?',
+                semana: 1,
+                tiempo: 5,
+                descripcion: 'Entender la nicotina y cómo funciona la adicción',
+                contenido: `
+                    <h3>Entender la Nicotina</h3>
+                    <p>La nicotina es una droga altamente adictiva. Cuando fumas un cigarrillo:</p>
+                    <ol>
+                        <li>Introduces nicotina en tu cuerpo</li>
+                        <li>Tu cuerpo experimenta una leve sensación de euforia</li>
+                        <li>La nicotina se disipa rápidamente</li>
+                        <li>Tu cuerpo quiere más (esto es el <strong>Pequeño Monstruo</strong>)</li>
+                    </ol>
+                    <p><strong>La clave:</strong> No fumas por placer. Fumas para alimentar al Pequeño Monstruo.</p>
+                    
+                    <h3 style="margin-top: 20px;">Quiz Rápido</h3>
+                    <p><strong>¿Cuál es la ÚNICA razón real por la que fumas?</strong></p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="quiz" value="a"> A) Me relaja
+                        </label>
+                        <label style="display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="quiz" value="b" checked> B) Alimentar al Pequeño Monstruo
+                        </label>
+                        <label style="display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="quiz" value="c"> C) Disfruto el sabor
+                        </label>
+                    </div>
+                `
+            },
+            {
+                id: '1.2',
+                titulo: 'Lección 1.2: La Planta Carnívora',
+                semana: 1,
+                tiempo: 8,
+                descripcion: 'La metáfora que explica cómo funciona la trampa',
+                contenido: `
+                    <h3>La Planta Carnívora</h3>
+                    <p>La trampa de la nicotina funciona exactamente como una planta carnívora:</p>
+                    <ul>
+                        <li>El néctar es atractivo (como el sabor del cigarro)</li>
+                        <li>Te atrapas sin darte cuenta</li>
+                        <li>Cuanto más luchas, más atrapado estás</li>
+                    </ul>
+                    <p><strong>Importante:</strong> Ya estabas atrapado desde el primer cigarro.</p>
+                `
+            },
+            {
+                id: '1.3',
+                titulo: 'Lección 1.3: No Es Tu Elección',
+                semana: 1,
+                tiempo: 7,
+                descripcion: 'Los fumadores no escogen, están atrapados',
+                contenido: `
+                    <h3>¿Es tu elección fumar?</h3>
+                    <p>La mayoría de los fumadores preferirían ser no fumadores.</p>
+                    <p>Esto significa que <strong>NO eligen fumar</strong>. Están atrapados.</p>
+                    <p>Entender esto es fundamental para tu libertad.</p>
+                `
+            }
+        ];
         
         // ============================================
         // INICIALIZACIÓN
@@ -887,6 +987,7 @@
         
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Inicializando Easy Freedom Dashboard');
+            lecciones = leccionesData;
             verificarLogin();
         });
         
@@ -908,6 +1009,8 @@
         
         function logout() {
             localStorage.removeItem('easyFreedom_usuario');
+            localStorage.removeItem('easyFreedom_tareas');
+            localStorage.removeItem('easyFreedom_leccion');
             location.reload();
         }
         
@@ -919,7 +1022,6 @@
                 return;
             }
             
-            // Guardar sesión en localStorage
             const usuario = {
                 email: email,
                 nombre: email.split('@')[0].toUpperCase()
@@ -937,6 +1039,8 @@
             usuarioActual = usuario;
             document.getElementById('userName').textContent = usuario.nombre;
             
+            // 🔄 Cargar datos del usuario desde API
+            cargarDatosUsuario();
             cargarDatos();
         }
         
@@ -947,66 +1051,12 @@
         async function cargarDatos() {
             try {
                 console.log('📡 Cargando datos para:', usuarioActual.email);
-                
-                // 1. Obtener datos del usuario
-                const responseUsuario = await fetch(`${API_BASE}?action=usuario&email=${usuarioActual.email}`);
-                const dataUsuario = await responseUsuario.json();
-                
-                console.log('Usuario response:', dataUsuario);
-                
-                if (dataUsuario.status === 'éxito' && dataUsuario.usuario) {
-                    usuarioActual = {
-                        ...usuarioActual,
-                        ...dataUsuario.usuario
-                    };
-                    mostrarDatosUsuario();
-                } else {
-                    console.warn('No se obtuvieron datos del usuario');
-                    mostrarDatosDefault();
-                }
-                
-                // 2. Obtener tareas del día
-                const responseTareas = await fetch(`${API_BASE}?action=tareas`);
-                const dataTareas = await responseTareas.json();
-                
-                console.log('Tareas response:', dataTareas);
-                
-                if (dataTareas.status === 'éxito' && dataTareas.tareas && Array.isArray(dataTareas.tareas)) {
-                    tareasDelDia = dataTareas.tareas;
-                    console.log('Tareas cargadas:', tareasDelDia.length);
-                    renderizarTareas();
-                } else {
-                    console.warn('No hay tareas, usando datos por defecto');
-                    generarTareasPorDefecto();
-                }
-                
-                // 3. Obtener lecciones
-                const responseLecciones = await fetch(`${API_BASE}?action=lecciones`);
-                const dataLecciones = await responseLecciones.json();
-                
-                console.log('Lecciones response:', dataLecciones);
-                
+                generarTareasPorDefecto();
+                cargarLeccionActual();
             } catch (error) {
                 console.error('❌ Error cargando datos:', error);
-                mostrarNotificacion('Error cargando datos: ' + error.message, 'error');
                 generarTareasPorDefecto();
             }
-        }
-        
-        function mostrarDatosDefault() {
-            const usuario = usuarioActual;
-            document.getElementById('diasLibres').textContent = usuario.diasSinFumar || 15;
-            document.getElementById('dineroAhorrado').textContent = '$' + (usuario.dineroAhorrado || 750).toFixed(2);
-            document.getElementById('racha').textContent = usuario.racha || 15;
-        }
-        
-        function mostrarDatosUsuario() {
-            if (!usuarioActual) return;
-            
-            document.getElementById('diasLibres').textContent = usuarioActual.diasSinFumar || 0;
-            document.getElementById('dineroAhorrado').textContent = '$' + (usuarioActual.dineroAhorrado || 0).toFixed(2);
-            document.getElementById('racha').textContent = usuarioActual.racha || 0;
-            document.getElementById('userName').textContent = usuarioActual.nombre || 'Usuario';
         }
         
         function generarTareasPorDefecto() {
@@ -1021,6 +1071,16 @@
                 { id: 'TAREA-008', nombre: 'Visualización', emoji: '👁️', puntos: 3, completada: false },
                 { id: 'TAREA-009', nombre: 'Diario', emoji: '📔', puntos: 2, completada: false }
             ];
+            
+            // Cargar tareas guardadas
+            const tareasGuardadas = localStorage.getItem('easyFreedom_tareas');
+            if (tareasGuardadas) {
+                const saved = JSON.parse(tareasGuardadas);
+                tareasDelDia = tareasDelDia.map(t => ({
+                    ...t,
+                    completada: saved[t.id] || false
+                }));
+            }
             
             renderizarTareas();
         }
@@ -1066,6 +1126,7 @@
             const tarea = tareasDelDia.find(t => t.id === idTarea);
             if (tarea) {
                 tarea.completada = !tarea.completada;
+                guardarTareasEnLocalStorage();
                 renderizarTareas();
                 
                 if (tarea.completada) {
@@ -1074,41 +1135,120 @@
             }
         }
         
+        function guardarTareasEnLocalStorage() {
+            const tareasGuardadas = {};
+            tareasDelDia.forEach(t => {
+                tareasGuardadas[t.id] = t.completada;
+            });
+            localStorage.setItem('easyFreedom_tareas', JSON.stringify(tareasGuardadas));
+        }
+        
+        // ============================================
+        // GUARDAR PROGRESO EN GOOGLE SHEETS
+        // ============================================
+        
+        async function guardarProgreso() {
+            const btn = document.getElementById('btnGuardarProgreso');
+            
+            if (!usuarioActual || !usuarioActual.email) {
+                mostrarNotificacion('❌ Error: No hay usuario logueado', 'error');
+                return;
+            }
+            
+            // Calcular datos
+            const tareasCompletadas = tareasDelDia.filter(t => t.completada);
+            const puntosTotales = tareasCompletadas.reduce((sum, t) => sum + t.puntos, 0);
+            const dineroGanado = puntosTotales * 0.5; // Ejemplo: cada punto = $0.50
+            
+            const datos = {
+                action: 'guardar_progreso',  // ✅ AGREGADO: action es OBLIGATORIO
+                email: usuarioActual.email,
+                fecha: new Date().toISOString().split('T')[0],
+                tareasCompletadas: tareasCompletadas.map(t => t.nombre).join(', ') || 'Ninguna',
+                numTareas: tareasCompletadas.length,
+                total: dineroGanado,
+                detalles: JSON.stringify(
+                    tareasDelDia.reduce((obj, t) => {
+                        obj[t.id] = t.completada;
+                        return obj;
+                    }, {})
+                )
+            };
+            
+            console.log('📤 Enviando datos a Google Sheets:', datos);
+            
+            try {
+                btn.disabled = true;
+                btn.classList.add('loading');
+                btn.textContent = '⏳ Guardando...';
+                
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    body: JSON.stringify(datos)
+                });
+                
+                const result = await response.json();
+                
+                console.log('📥 Respuesta del servidor:', result);
+                
+                if (result.status === 'éxito' || result.status === 'success') {
+                    mostrarNotificacion(`✅ ¡Progreso guardado! ${dineroGanado.toFixed(2)} ganados hoy`, 'éxito');
+                    btn.textContent = '💾 Guardado ✓';
+                    
+                    // Resetear después de 2 segundos
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.classList.remove('loading');
+                        btn.textContent = '💾 Guardar Progreso';
+                    }, 2000);
+                } else {
+                    mostrarNotificacion('❌ Error: ' + (result.message || 'Error desconocido'), 'error');
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    btn.textContent = '💾 Guardar Progreso';
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                mostrarNotificacion('❌ Error de conexión: ' + error.message, 'error');
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.textContent = '💾 Guardar Progreso';
+            }
+        }
+        
         // ============================================
         // FUNCIONES DE LECCIONES
         // ============================================
         
+        function cargarLeccionActual() {
+            const leccionGuardada = localStorage.getItem('easyFreedom_leccion');
+            if (leccionGuardada) {
+                leccionActualIndice = parseInt(leccionGuardada);
+            }
+            
+            actualizarInterfazLeccion();
+        }
+        
+        function actualizarInterfazLeccion() {
+            if (leccionActualIndice >= lecciones.length) {
+                leccionActualIndice = lecciones.length - 1;
+            }
+            
+            const leccion = lecciones[leccionActualIndice];
+            
+            document.getElementById('leccionTitulo').textContent = leccion.titulo;
+            document.getElementById('leccionTiempo').textContent = leccion.tiempo;
+            document.getElementById('leccionSemana').textContent = leccion.semana;
+            document.getElementById('leccionDescripcion').textContent = leccion.descripcion;
+        }
+        
         function verLeccion() {
-            const modal = document.getElementById('modalLeccion');
+            const leccion = lecciones[leccionActualIndice];
             
-            document.getElementById('modalTitulo').textContent = '🧠 Lección 1.1: ¿Por qué fumas?';
-            document.getElementById('modalBody').innerHTML = `
-                <h3>Entender la Nicotina</h3>
-                <p>La nicotina es una droga altamente adictiva. Cuando fumas un cigarrillo:</p>
-                <ol>
-                    <li>Introduces nicotina en tu cuerpo</li>
-                    <li>Tu cuerpo experimenta una leve sensación de euforia</li>
-                    <li>La nicotina se disipa rápidamente</li>
-                    <li>Tu cuerpo quiere más (esto es el <strong>Pequeño Monstruo</strong>)</li>
-                </ol>
-                <p><strong>La clave:</strong> No fumas por placer. Fumas para alimentar al Pequeño Monstruo.</p>
-                
-                <h3 style="margin-top: 20px;">Quiz Rápido</h3>
-                <p><strong>¿Cuál es la ÚNICA razón real por la que fumas?</strong></p>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="display: flex; gap: 10px; align-items: center;">
-                        <input type="radio" name="quiz" value="a"> A) Me relaja
-                    </label>
-                    <label style="display: flex; gap: 10px; align-items: center;">
-                        <input type="radio" name="quiz" value="b" checked> B) Alimentar al Pequeño Monstruo
-                    </label>
-                    <label style="display: flex; gap: 10px; align-items: center;">
-                        <input type="radio" name="quiz" value="c"> C) Disfruto el sabor
-                    </label>
-                </div>
-            `;
+            document.getElementById('modalTitulo').textContent = leccion.titulo;
+            document.getElementById('modalBody').innerHTML = leccion.contenido;
             
-            modal.classList.add('active');
+            document.getElementById('modalLeccion').classList.add('active');
         }
         
         function cerrarModal() {
@@ -1116,12 +1256,25 @@
         }
         
         function completarLeccion() {
-            mostrarNotificacion('✓ Lección completada - +10 puntos', 'éxito');
+            const leccion = lecciones[leccionActualIndice];
+            
+            // Avanzar a siguiente lección
+            leccionActualIndice++;
+            
+            if (leccionActualIndice >= lecciones.length) {
+                mostrarNotificacion('🎉 ¡Completaste todas las lecciones!', 'éxito');
+                leccionActualIndice = lecciones.length - 1;
+            } else {
+                mostrarNotificacion(`✅ Lección ${leccion.id} completada! 🎉`, 'éxito');
+            }
+            
+            localStorage.setItem('easyFreedom_leccion', leccionActualIndice.toString());
+            actualizarInterfazLeccion();
             cerrarModal();
         }
         
         function saltarLeccion() {
-            mostrarNotificacion('⏭️ Lección saltada', 'info');
+            mostrarNotificacion('⏭️ Lección saltada por hoy', 'info');
         }
         
         // ============================================
