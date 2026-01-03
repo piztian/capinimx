@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#27AE60">
+    <meta name="description" content="Easy Freedom - Dejar de Fumar con Método Allen Carr">
+    
+    <title>🚭 Easy Freedom - Tu Viaje de Libertad</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #27AE60;
+            --primary-dark: #16A085;
+            --secondary: #F39C12;
+            --danger: #E74C3C;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+            --text: #333;
+            --border: #BDC3C7;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, #27AE60 0%, #16A085 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #27AE60 0%, #16A085 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+        }
+        
+        #loginForm {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        #loginForm input {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            font-size: 0.9rem;
+            font-family: 'Fredoka', sans-serif;
+            min-width: 180px;
+        }
+        
+        #userDisplay {
+            display: none;
+        }
+        
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* SECTION STATS HERO */
+        .stats-hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card.dias-libres {
+            border-top-color: var(--primary);
+        }
+        
+        .stat-card.dinero-ahorrado {
+            border-top-color: #3498DB;
+        }
+        
+        .stat-card.tareas-hoy {
+            border-top-color: var(--secondary);
+        }
+        
+        .stat-card.racha {
+            border-top-color: var(--danger);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #7F8C8D;
+            font-weight: 600;
+        }
+        
+        /* PROGRESS TIMELINE */
+        .progress-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .progress-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .progress-timeline {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .timeline-item {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f5f5f5;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .timeline-item.active {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
+            border: 2px solid var(--primary);
+        }
+        
+        .timeline-item h3 {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .timeline-item p {
+            font-size: 0.85rem;
+            color: #7F8C8D;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #ECF0F1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 0.5s ease;
+        }
+        
+        /* LESSON CARD */
+        .lesson-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498DB;
+        }
+        
+        .lesson-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .lesson-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .lesson-header h3 {
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .lesson-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #7F8C8D;
+        }
+        
+        .lesson-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* TASKS SECTION */
+        .tasks-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tasks-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .task-progress {
+            margin-bottom: 20px;
+        }
+        
+        .task-progress-text {
+            font-size: 0.9rem;
+            color: #7F8C8D;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .task-progress-bar {
+            height: 8px;
+            background: #ECF0F1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .task-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+        }
+        
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        
+        .task-card {
+            background: white;
+            border: 2px solid #ECF0F1;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .task-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .task-card.completed {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
+            border-color: var(--primary);
+        }
+        
+        .task-emoji {
+            font-size: 2rem;
+        }
+        
+        .task-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .task-points {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            margin-top: 5px;
+        }
+        
+        .task-card.completed .task-checkbox {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* BUTTONS */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #D5D8DC;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        /* COMMUNITY SECTION */
+        .community-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .community-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .community-feed {
+            display: grid;
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .community-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .community-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .community-info {
+            flex: 1;
+        }
+        
+        .community-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 3px;
+        }
+        
+        .community-achievement {
+            font-size: 0.9rem;
+            color: #7F8C8D;
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .modal-header h2 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            color: var(--primary);
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        /* FOOTER */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .user-info {
+                position: static;
+                margin-top: 10px;
+                justify-content: center;
+            }
+            
+            #loginForm {
+                justify-content: center;
+            }
+            
+            #loginForm input {
+                min-width: 150px;
+            }
+            
+            .stats-hero {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .progress-timeline {
+                flex-direction: column;
+            }
+            
+            .tasks-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .lesson-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-hero {
+                grid-template-columns: 1fr;
+            }
+            
+            .tasks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            #loginForm {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            #loginForm input {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* LOADING STATE */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* TOAST NOTIFICATIONS */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+            z-index: 2000;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="user-info" id="userInfoContainer">
+            <div id="loginForm">
+                <input id="loginEmail" type="email" placeholder="tu@email.com">
+                <button id="btnLogin" class="btn btn-primary btn-small" onclick="loginUsuario()">Login</button>
+            </div>
+            <div id="userDisplay">
+                👤 <span id="userName">Usuario</span>
+            </div>
+        </div>
+        <h1>🚭 EASY FREEDOM</h1>
+        <p>Tu Viaje de Libertad Comienza Hoy</p>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        
+        <!-- STATS HERO -->
+        <section class="stats-hero fade-in">
+            <div class="stat-card dias-libres">
+                <div class="stat-icon">🚭</div>
+                <div class="stat-value" id="diasLibres">0</div>
+                <div class="stat-label">Días sin Fumar</div>
+            </div>
+            
+            <div class="stat-card dinero-ahorrado">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="dineroAhorrado">$0</div>
+                <div class="stat-label">Dinero Ahorrado</div>
+            </div>
+            
+            <div class="stat-card tareas-hoy">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="tareasHoy">0%</div>
+                <div class="stat-label">Tareas Hoy</div>
+            </div>
+            
+            <div class="stat-card racha">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value" id="racha">0</div>
+                <div class="stat-label">Racha (Días)</div>
+            </div>
+        </section>
+        
+        <!-- PROGRESS TIMELINE -->
+        <section class="progress-section fade-in">
+            <h2>📈 Tu Progreso en Easy Freedom</h2>
+            <div class="progress-timeline">
+                <div class="timeline-item active">
+                    <h3>Semana 1-2</h3>
+                    <p>Entender la Trampa</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <h3>Semana 3-4</h3>
+                    <p>Desmontar Ilusiones</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <h3>Semana 5-8</h3>
+                    <p>Viviendo sin Fumar</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- LESSON SECTION -->
+        <section class="lesson-section fade-in">
+            <h2>📚 Lección de Hoy</h2>
+            <div class="lesson-card">
+                <div class="lesson-header">
+                    <h3 id="leccionTitulo">Lección 1.1: ¿Por qué fumas?</h3>
+                    <div class="lesson-meta">
+                        <span>⏱️ 5 min</span>
+                        <span>📍 Semana 1</span>
+                    </div>
+                </div>
+                <p id="leccionDescripcion">Entender la nicotina y cómo funciona la adicción es el primer paso para tu libertad.</p>
+                <div class="lesson-actions">
+                    <button class="btn btn-primary" onclick="verLeccion()">Ver Lección</button>
+                    <button class="btn btn-secondary" onclick="saltarLeccion()">Saltar por Hoy</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- TASKS SECTION -->
+        <section class="tasks-section fade-in">
+            <h2>✅ Tus Tareas de Hoy</h2>
+            
+            <div class="task-progress">
+                <div class="task-progress-text" id="taskProgressText">0 / 9 tareas completadas</div>
+                <div class="task-progress-bar">
+                    <div class="task-progress-fill" id="taskProgressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="tasks-grid" id="tasksGrid">
+                <!-- Las tareas se cargan dinámicamente -->
+            </div>
+        </section>
+        
+        <!-- COMMUNITY SECTION -->
+        <section class="community-section fade-in">
+            <h2>👥 Tu Comunidad</h2>
+            <div class="community-feed" id="communityFeed">
+                <div class="community-item">
+                    <div class="community-avatar">M</div>
+                    <div class="community-info">
+                        <div class="community-name">María</div>
+                        <div class="community-achievement">🔥 34 días sin fumar</div>
+                    </div>
+                </div>
+                <div class="community-item">
+                    <div class="community-avatar">J</div>
+                    <div class="community-info">
+                        <div class="community-name">Juan</div>
+                        <div class="community-achievement">🏆 30 días - $750 ahorrados</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 15px; width: 100%;">Invitar Amigos</button>
+        </section>
+
+    </div>
+
+    <!-- MODAL LECCIÓN -->
+    <div class="modal" id="modalLeccion">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Lección</h2>
+                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-small" onclick="cerrarModal()">Cerrar</button>
+                <button class="btn btn-primary btn-small" onclick="completarLeccion()">Completar ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2025 Easy Freedom - Método Allen Carr | <a href="#">Términos</a> | <a href="#">Privacidad</a></p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Configuración
+        const API_BASE = 'https://script.google.com/macros/s/AKfycbwdRmvsPaIiE8gxpl2d1iNzzYL0vW64ujyESdMaH2u5XronAT1oTGibO2ZghbQpo1Yn/exec';
+        
+        // Estado global
+        let usuarioActual = null;
+        let tareasDelDia = [];
+        let leccionActual = null;
+        
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Inicializando Easy Freedom Dashboard');
+            verificarLogin();
+        });
+        
+        function verificarLogin() {
+            const usuarioGuardado = localStorage.getItem('easyFreedom_usuario');
+            
+            if (usuarioGuardado) {
+                const usuario = JSON.parse(usuarioGuardado);
+                mostrarDashboard(usuario);
+            } else {
+                mostrarLogin();
+            }
+        }
+        
+        function mostrarLogin() {
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('userDisplay').style.display = 'none';
+        }
+        
+        function loginUsuario() {
+            const email = document.getElementById('loginEmail').value;
+            
+            if (!email) {
+                mostrarNotificacion('Por favor ingresa tu email', 'error');
+                return;
+            }
+            
+            // Guardar sesión en localStorage
+            const usuario = {
+                email: email,
+                nombre: email.split('@')[0].toUpperCase(),
+                cigarrosPorDia: 20,
+                precioCigarro: 2.50,
+                diasSinFumar: 15,
+                dineroAhorrado: 750,
+                racha: 15
+            };
+            
+            localStorage.setItem('easyFreedom_usuario', JSON.stringify(usuario));
+            mostrarDashboard(usuario);
+            mostrarNotificacion('✅ Sesión iniciada correctamente', 'éxito');
+        }
+        
+        function mostrarDashboard(usuario) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('userDisplay').style.display = 'block';
+            
+            usuarioActual = usuario;
+            document.getElementById('userName').textContent = usuario.nombre;
+            
+            cargarDatos();
+        }
+        
+        async function cargarDatos() {
+            try {
+                mostrarDatosUsuario();
+                generarTareasDia();
+                mostrarComunidad();
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                mostrarNotificacion('Error cargando datos', 'error');
+            }
+        }
+        
+        // ============================================
+        // MOSTRAR DATOS DEL USUARIO
+        // ============================================
+        
+        function mostrarDatosUsuario() {
+            if (!usuarioActual) return;
+            
+            document.getElementById('userName').textContent = usuarioActual.nombre;
+            document.getElementById('diasLibres').textContent = usuarioActual.diasSinFumar;
+            document.getElementById('dineroAhorrado').textContent = '$' + usuarioActual.dineroAhorrado.toFixed(2);
+            document.getElementById('racha').textContent = usuarioActual.racha;
+        }
+        
+        function generarTareasDia() {
+            tareasDelDia = [
+                { id: 'TAREA-001', nombre: 'Vaso de agua', emoji: '💧', puntos: 2, completada: true },
+                { id: 'TAREA-002', nombre: 'Respiración', emoji: '🫁', puntos: 3, completada: true },
+                { id: 'TAREA-003', nombre: 'Caminata', emoji: '🚶', puntos: 5, completada: false },
+                { id: 'TAREA-004', nombre: 'Mindfulness', emoji: '🧘', puntos: 2, completada: false },
+                { id: 'TAREA-005', nombre: 'Escribir razón', emoji: '✍️', puntos: 1, completada: false },
+                { id: 'TAREA-006', nombre: 'Llamada apoyo', emoji: '📱', puntos: 5, completada: false },
+                { id: 'TAREA-007', nombre: 'Lectura', emoji: '📖', puntos: 2, completada: false },
+                { id: 'TAREA-008', nombre: 'Visualización', emoji: '👁️', puntos: 3, completada: false },
+                { id: 'TAREA-009', nombre: 'Diario', emoji: '📔', puntos: 2, completada: false }
+            ];
+            
+            renderizarTareas();
+        }
+        
+        function renderizarTareas() {
+            const grid = document.getElementById('tasksGrid');
+            grid.innerHTML = '';
+            
+            let completadas = 0;
+            
+            tareasDelDia.forEach(tarea => {
+                const card = document.createElement('div');
+                card.className = `task-card ${tarea.completada ? 'completed' : ''}`;
+                card.onclick = () => toggleTarea(tarea.id);
+                
+                if (tarea.completada) completadas++;
+                
+                card.innerHTML = `
+                    <div class="task-emoji">${tarea.emoji}</div>
+                    <div class="task-name">${tarea.nombre}</div>
+                    <div class="task-points">+${tarea.puntos} pts</div>
+                    <div class="task-checkbox">${tarea.completada ? '✓' : ''}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            // Actualizar progreso
+            const total = tareasDelDia.length;
+            const porcentaje = Math.round((completadas / total) * 100);
+            
+            document.getElementById('taskProgressText').textContent = `${completadas} / ${total} tareas completadas`;
+            document.getElementById('taskProgressFill').style.width = porcentaje + '%';
+            document.getElementById('tareasHoy').textContent = porcentaje + '%';
+        }
+        
+        function toggleTarea(idTarea) {
+            const tarea = tareasDelDia.find(t => t.id === idTarea);
+            if (tarea) {
+                tarea.completada = !tarea.completada;
+                renderizarTareas();
+                
+                if (tarea.completada) {
+                    mostrarNotificacion(`✓ ${tarea.nombre} - +${tarea.puntos} puntos`, 'éxito');
+                }
+            }
+        }
+        
+        function mostrarComunidad() {
+            // Ya tiene contenido de ejemplo en HTML
+        }
+        
+        // ============================================
+        // FUNCIONES DE LECCIONES
+        // ============================================
+        
+        function verLeccion() {
+            const modal = document.getElementById('modalLeccion');
+            
+            document.getElementById('modalTitulo').textContent = '🧠 Lección 1.1: ¿Por qué fumas?';
+            document.getElementById('modalBody').innerHTML = `
+                <h3>Entender la Nicotina</h3>
+                <p>La nicotina es una droga altamente adictiva. Cuando fumas un cigarrillo:</p>
+                <ol>
+                    <li>Introduces nicotina en tu cuerpo</li>
+                    <li>Tu cuerpo experimenta una leve sensación de euforia</li>
+                    <li>La nicotina se disipa rápidamente</li>
+                    <li>Tu cuerpo quiere más (esto es el <strong>Pequeño Monstruo</strong>)</li>
+                </ol>
+                <p><strong>La clave:</strong> No fumas por placer. Fumas para alimentar al Pequeño Monstruo.</p>
+                
+                <h3 style="margin-top: 20px;">Quiz Rápido</h3>
+                <p><strong>¿Cuál es la ÚNICA razón real por la que fumas?</strong></p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="display: flex; gap: 10px; align-items: center;">
+                        <input type="radio" name="quiz" value="a"> A) Me relaja
+                    </label>
+                    <label style="display: flex; gap: 10px; align-items: center;">
+                        <input type="radio" name="quiz" value="b"> B) Alimentar al Pequeño Monstruo
+                    </label>
+                    <label style="display: flex; gap: 10px; align-items: center;">
+                        <input type="radio" name="quiz" value="c"> C) Disfruto el sabor
+                    </label>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+        
+        function cerrarModal() {
+            document.getElementById('modalLeccion').classList.remove('active');
+        }
+        
+        function completarLeccion() {
+            mostrarNotificacion('✓ Lección completada - +10 puntos', 'éxito');
+            cerrarModal();
+        }
+        
+        function saltarLeccion() {
+            mostrarNotificacion('⏭️ Lección saltada', 'info');
+        }
+        
+        // ============================================
+        // NOTIFICACIONES
+        // ============================================
+        
+        function mostrarNotificacion(mensaje, tipo = 'éxito') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = mensaje;
+            
+            if (tipo === 'error') {
+                toast.style.background = '#E74C3C';
+            } else if (tipo === 'info') {
+                toast.style.background = '#3498DB';
+            }
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
