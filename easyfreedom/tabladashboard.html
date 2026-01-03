@@ -101,6 +101,8 @@
         
         #userDisplay {
             display: none;
+            gap: 15px;
+            align-items: center;
         }
         
         /* MAIN CONTAINER */
@@ -421,6 +423,17 @@
             font-size: 0.9rem;
         }
         
+        .btn-logout {
+            background: #E74C3C;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-logout:hover {
+            background: #C0392B;
+        }
+        
         /* COMMUNITY SECTION */
         .community-section {
             background: white;
@@ -585,14 +598,17 @@
                 position: static;
                 margin-top: 10px;
                 justify-content: center;
+                flex-direction: column;
             }
             
             #loginForm {
                 justify-content: center;
+                flex-direction: column;
             }
             
             #loginForm input {
-                min-width: 150px;
+                width: 100%;
+                min-width: auto;
             }
             
             .stats-hero {
@@ -636,16 +652,6 @@
             
             .modal-content {
                 padding: 20px;
-            }
-            
-            #loginForm {
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            #loginForm input {
-                width: 100%;
-                min-width: auto;
             }
         }
         
@@ -716,7 +722,8 @@
                 <button id="btnLogin" class="btn btn-primary btn-small" onclick="loginUsuario()">Login</button>
             </div>
             <div id="userDisplay">
-                👤 <span id="userName">Usuario</span>
+                <span>👤 <span id="userName">Usuario</span></span>
+                <button class="btn btn-logout btn-small" onclick="logout()">Logout</button>
             </div>
         </div>
         <h1>🚭 EASY FREEDOM</h1>
@@ -807,7 +814,7 @@
             <h2>✅ Tus Tareas de Hoy</h2>
             
             <div class="task-progress">
-                <div class="task-progress-text" id="taskProgressText">0 / 9 tareas completadas</div>
+                <div class="task-progress-text" id="taskProgressText">Cargando tareas...</div>
                 <div class="task-progress-bar">
                     <div class="task-progress-fill" id="taskProgressFill" style="width: 0%"></div>
                 </div>
@@ -899,6 +906,11 @@
             document.getElementById('userDisplay').style.display = 'none';
         }
         
+        function logout() {
+            localStorage.removeItem('easyFreedom_usuario');
+            location.reload();
+        }
+        
         function loginUsuario() {
             const email = document.getElementById('loginEmail').value;
             
@@ -910,12 +922,7 @@
             // Guardar sesión en localStorage
             const usuario = {
                 email: email,
-                nombre: email.split('@')[0].toUpperCase(),
-                cigarrosPorDia: 20,
-                precioCigarro: 2.50,
-                diasSinFumar: 15,
-                dineroAhorrado: 750,
-                racha: 15
+                nombre: email.split('@')[0].toUpperCase()
             };
             
             localStorage.setItem('easyFreedom_usuario', JSON.stringify(usuario));
@@ -925,7 +932,7 @@
         
         function mostrarDashboard(usuario) {
             document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('userDisplay').style.display = 'block';
+            document.getElementById('userDisplay').style.display = 'flex';
             
             usuarioActual = usuario;
             document.getElementById('userName').textContent = usuario.nombre;
@@ -933,34 +940,79 @@
             cargarDatos();
         }
         
+        // ============================================
+        // CARGAR DATOS DESDE API
+        // ============================================
+        
         async function cargarDatos() {
             try {
-                mostrarDatosUsuario();
-                generarTareasDia();
-                mostrarComunidad();
+                console.log('📡 Cargando datos para:', usuarioActual.email);
+                
+                // 1. Obtener datos del usuario
+                const responseUsuario = await fetch(`${API_BASE}?action=usuario&email=${usuarioActual.email}`);
+                const dataUsuario = await responseUsuario.json();
+                
+                console.log('Usuario response:', dataUsuario);
+                
+                if (dataUsuario.status === 'éxito' && dataUsuario.usuario) {
+                    usuarioActual = {
+                        ...usuarioActual,
+                        ...dataUsuario.usuario
+                    };
+                    mostrarDatosUsuario();
+                } else {
+                    console.warn('No se obtuvieron datos del usuario');
+                    mostrarDatosDefault();
+                }
+                
+                // 2. Obtener tareas del día
+                const responseTareas = await fetch(`${API_BASE}?action=tareas`);
+                const dataTareas = await responseTareas.json();
+                
+                console.log('Tareas response:', dataTareas);
+                
+                if (dataTareas.status === 'éxito' && dataTareas.tareas && Array.isArray(dataTareas.tareas)) {
+                    tareasDelDia = dataTareas.tareas;
+                    console.log('Tareas cargadas:', tareasDelDia.length);
+                    renderizarTareas();
+                } else {
+                    console.warn('No hay tareas, usando datos por defecto');
+                    generarTareasPorDefecto();
+                }
+                
+                // 3. Obtener lecciones
+                const responseLecciones = await fetch(`${API_BASE}?action=lecciones`);
+                const dataLecciones = await responseLecciones.json();
+                
+                console.log('Lecciones response:', dataLecciones);
+                
             } catch (error) {
-                console.error('Error cargando datos:', error);
-                mostrarNotificacion('Error cargando datos', 'error');
+                console.error('❌ Error cargando datos:', error);
+                mostrarNotificacion('Error cargando datos: ' + error.message, 'error');
+                generarTareasPorDefecto();
             }
         }
         
-        // ============================================
-        // MOSTRAR DATOS DEL USUARIO
-        // ============================================
+        function mostrarDatosDefault() {
+            const usuario = usuarioActual;
+            document.getElementById('diasLibres').textContent = usuario.diasSinFumar || 15;
+            document.getElementById('dineroAhorrado').textContent = '$' + (usuario.dineroAhorrado || 750).toFixed(2);
+            document.getElementById('racha').textContent = usuario.racha || 15;
+        }
         
         function mostrarDatosUsuario() {
             if (!usuarioActual) return;
             
-            document.getElementById('userName').textContent = usuarioActual.nombre;
-            document.getElementById('diasLibres').textContent = usuarioActual.diasSinFumar;
-            document.getElementById('dineroAhorrado').textContent = '$' + usuarioActual.dineroAhorrado.toFixed(2);
-            document.getElementById('racha').textContent = usuarioActual.racha;
+            document.getElementById('diasLibres').textContent = usuarioActual.diasSinFumar || 0;
+            document.getElementById('dineroAhorrado').textContent = '$' + (usuarioActual.dineroAhorrado || 0).toFixed(2);
+            document.getElementById('racha').textContent = usuarioActual.racha || 0;
+            document.getElementById('userName').textContent = usuarioActual.nombre || 'Usuario';
         }
         
-        function generarTareasDia() {
+        function generarTareasPorDefecto() {
             tareasDelDia = [
-                { id: 'TAREA-001', nombre: 'Vaso de agua', emoji: '💧', puntos: 2, completada: true },
-                { id: 'TAREA-002', nombre: 'Respiración', emoji: '🫁', puntos: 3, completada: true },
+                { id: 'TAREA-001', nombre: 'Vaso de agua', emoji: '💧', puntos: 2, completada: false },
+                { id: 'TAREA-002', nombre: 'Respiración', emoji: '🫁', puntos: 3, completada: false },
                 { id: 'TAREA-003', nombre: 'Caminata', emoji: '🚶', puntos: 5, completada: false },
                 { id: 'TAREA-004', nombre: 'Mindfulness', emoji: '🧘', puntos: 2, completada: false },
                 { id: 'TAREA-005', nombre: 'Escribir razón', emoji: '✍️', puntos: 1, completada: false },
@@ -977,6 +1029,11 @@
             const grid = document.getElementById('tasksGrid');
             grid.innerHTML = '';
             
+            if (!tareasDelDia || tareasDelDia.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #999;">No hay tareas disponibles</p>';
+                return;
+            }
+            
             let completadas = 0;
             
             tareasDelDia.forEach(tarea => {
@@ -987,9 +1044,9 @@
                 if (tarea.completada) completadas++;
                 
                 card.innerHTML = `
-                    <div class="task-emoji">${tarea.emoji}</div>
+                    <div class="task-emoji">${tarea.emoji || '✓'}</div>
                     <div class="task-name">${tarea.nombre}</div>
-                    <div class="task-points">+${tarea.puntos} pts</div>
+                    <div class="task-points">+${tarea.puntos || 0} pts</div>
                     <div class="task-checkbox">${tarea.completada ? '✓' : ''}</div>
                 `;
                 
@@ -997,7 +1054,7 @@
             });
             
             // Actualizar progreso
-            const total = tareasDelDia.length;
+            const total = tareasDelDia.length || 1;
             const porcentaje = Math.round((completadas / total) * 100);
             
             document.getElementById('taskProgressText').textContent = `${completadas} / ${total} tareas completadas`;
@@ -1015,10 +1072,6 @@
                     mostrarNotificacion(`✓ ${tarea.nombre} - +${tarea.puntos} puntos`, 'éxito');
                 }
             }
-        }
-        
-        function mostrarComunidad() {
-            // Ya tiene contenido de ejemplo en HTML
         }
         
         // ============================================
@@ -1047,7 +1100,7 @@
                         <input type="radio" name="quiz" value="a"> A) Me relaja
                     </label>
                     <label style="display: flex; gap: 10px; align-items: center;">
-                        <input type="radio" name="quiz" value="b"> B) Alimentar al Pequeño Monstruo
+                        <input type="radio" name="quiz" value="b" checked> B) Alimentar al Pequeño Monstruo
                     </label>
                     <label style="display: flex; gap: 10px; align-items: center;">
                         <input type="radio" name="quiz" value="c"> C) Disfruto el sabor
