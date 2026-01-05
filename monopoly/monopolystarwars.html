@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⭐ Star Wars: Galactic Monopoly</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255,0,0,0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            max-width: 1800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF4500 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5), inset 0 0 20px rgba(255,255,255,0.2);
+            text-align: center;
+            color: #000;
+            border: 3px solid #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header h1 { 
+            font-size: 2.8rem; 
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 900;
+        }
+        .header p { 
+            font-size: 1.1rem; 
+            opacity: 0.9;
+            letter-spacing: 2px;
+        }
+        
+        .board-wrapper { display: flex; justify-content: center; align-items: center; }
+        .monopoly-board {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 8px solid #FFD700;
+            border-radius: 4px;
+            width: 500px;
+            height: 500px;
+            position: relative;
+            display: grid;
+            grid-template-columns: 60px repeat(9, 1fr) 60px;
+            grid-template-rows: 60px repeat(9, 1fr) 60px;
+            gap: 1px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+        .board-space {
+            border: 1px solid #555;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-align: center;
+            position: relative;
+            background: #1a1a1a;
+            cursor: pointer;
+            overflow: hidden;
+            color: #FFD700;
+            text-shadow: 0 0 5px #000;
+        }
+        .board-space:hover { 
+            box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.3);
+            background: #222;
+        }
+        .corner-space { 
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            font-weight: 900;
+            text-shadow: none;
+        }
+        .street-property { border-top: 12px solid; }
+        
+        /* Colores por facción */
+        .jedi { border-top-color: #4DB8FF; }
+        .sith { border-top-color: #FF0000; }
+        .neutral { border-top-color: #FFD700; }
+        .empire { border-top-color: #333333; }
+        .rebellion { border-top-color: #00FF00; }
+        .hutt { border-top-color: #8B4513; }
+        
+        .starship { background: linear-gradient(135deg, #555, #333); color: #FFD700; border-top-color: #FFD700; }
+        .outpost { background: #2a2a4a; border-top-color: #4DB8FF; }
+        .event-space { background: linear-gradient(135deg, #4DB8FF, #00FF7F); color: #000; font-weight: 700; }
+        .location-space { background: #FFD700; color: #000; }
+        
+        .space-0 { grid-column: 1; grid-row: 11; } .space-1 { grid-column: 2; grid-row: 11; } .space-2 { grid-column: 3; grid-row: 11; } .space-3 { grid-column: 4; grid-row: 11; } .space-4 { grid-column: 5; grid-row: 11; } .space-5 { grid-column: 6; grid-row: 11; } .space-6 { grid-column: 7; grid-row: 11; } .space-7 { grid-column: 8; grid-row: 11; } .space-8 { grid-column: 9; grid-row: 11; } .space-9 { grid-column: 10; grid-row: 11; } .space-10 { grid-column: 11; grid-row: 11; }
+        .space-11 { grid-column: 11; grid-row: 10; } .space-12 { grid-column: 11; grid-row: 9; } .space-13 { grid-column: 11; grid-row: 8; } .space-14 { grid-column: 11; grid-row: 7; } .space-15 { grid-column: 11; grid-row: 6; } .space-16 { grid-column: 11; grid-row: 5; } .space-17 { grid-column: 11; grid-row: 4; } .space-18 { grid-column: 11; grid-row: 3; } .space-19 { grid-column: 11; grid-row: 2; } .space-20 { grid-column: 11; grid-row: 1; }
+        .space-21 { grid-column: 10; grid-row: 1; } .space-22 { grid-column: 9; grid-row: 1; } .space-23 { grid-column: 8; grid-row: 1; } .space-24 { grid-column: 7; grid-row: 1; } .space-25 { grid-column: 6; grid-row: 1; } .space-26 { grid-column: 5; grid-row: 1; } .space-27 { grid-column: 4; grid-row: 1; } .space-28 { grid-column: 3; grid-row: 1; } .space-29 { grid-column: 2; grid-row: 1; } .space-30 { grid-column: 1; grid-row: 1; }
+        .space-31 { grid-column: 1; grid-row: 2; } .space-32 { grid-column: 1; grid-row: 3; } .space-33 { grid-column: 1; grid-row: 4; } .space-34 { grid-column: 1; grid-row: 5; } .space-35 { grid-column: 1; grid-row: 6; } .space-36 { grid-column: 1; grid-row: 7; } .space-37 { grid-column: 1; grid-row: 8; } .space-38 { grid-column: 1; grid-row: 9; } .space-39 { grid-column: 1; grid-row: 10; }
+        
+        .players-on-space { position: absolute; bottom: 1px; left: 1px; display: flex; gap: 2px; flex-wrap: wrap; }
+        .player-token { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #FFD700; box-shadow: 0 0 5px currentColor; }
+        .rent-level { position: absolute; bottom: 8px; right: 1px; background: #FF0000; color: #FFD700; width: 12px; height: 12px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: bold; }
+        
+        .side-panel {
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255,255,255,0.05);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 700px;
+            overflow-y: auto;
+            width: 280px;
+            border: 2px solid #FFD700;
+        }
+        
+        .section-title { 
+            font-weight: 900; 
+            color: #FFD700; 
+            font-size: 0.95rem; 
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .player-card {
+            background: rgba(45, 45, 75, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            border: 1px solid #555;
+        }
+        .player-card.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            transform: translateX(3px);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        .player-name { font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+        .player-color-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .player-stat { display: flex; justify-content: space-between; font-size: 0.8rem; }
+        
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .dice-container { display: flex; gap: 8px; justify-content: center; }
+        .dice { 
+            width: 40px; 
+            height: 40px; 
+            background: #1a1a1a;
+            border: 2px solid #FFD700; 
+            border-radius: 5px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.4rem; 
+            font-weight: bold; 
+            color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        .dice.rolling { animation: roll 0.3s infinite; }
+        @keyframes roll { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(180deg); } }
+        
+        .total-roll { text-align: center; font-size: 0.9rem; font-weight: bold; color: #FFD700; }
+        
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            width: 100%;
+            border: 2px solid #FF4500;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #FFE55C, #FFB74D);
+        }
+        
+        .btn-secondary {
+            background: rgba(80, 80, 120, 0.8);
+            color: #FFD700;
+            width: 100%;
+            border: 1px solid #FFD700;
+        }
+        .btn-secondary:hover { 
+            background: rgba(100, 100, 140, 0.9);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .game-log {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            max-height: 120px;
+            overflow-y: auto;
+            border-left: 3px solid #FFD700;
+            border: 1px solid #555;
+        }
+        .log-entry { padding: 2px 0; line-height: 1.2; border-bottom: 1px solid #333; }
+        .log-entry.info { color: #4DB8FF; font-weight: 600; }
+        .log-entry.success { color: #00FF00; }
+        .log-entry.warning { color: #FF6B6B; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a3e 0%, #2d1b4e 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            border: 2px solid #FFD700;
+            color: #FFD700;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-header { font-size: 1.4rem; font-weight: 900; color: #FFD700; margin-bottom: 15px; text-transform: uppercase; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .modal-body { margin-bottom: 15px; color: #ccc; line-height: 1.5; font-size: 0.95rem; }
+        .property-info { background: rgba(80, 80, 120, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #FFD700; }
+        .property-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; margin-bottom: 4px; font-weight: 600; color: #FFD700; font-size: 0.9rem; }
+        .input-group input, .input-group select { 
+            width: 100%; 
+            padding: 8px; 
+            border: 2px solid #FFD700; 
+            border-radius: 5px; 
+            font-size: 0.9rem;
+            background: #1a1a1a;
+            color: #FFD700;
+        }
+        .input-group input:focus, .input-group select:focus { 
+            outline: none; 
+            border-color: #FFA500;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+        .modal-footer button { min-width: 90px; padding: 10px 15px; }
+        
+        .status-bar {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 12px; border-bottom: 2px solid #333; }
+        .tab-btn { padding: 8px 12px; background: none; border: none; border-bottom: 3px solid transparent; color: #ccc; cursor: pointer; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
+        .tab-btn.active { color: #FFD700; border-bottom-color: #FFD700; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .property-item { 
+            background: rgba(80, 80, 120, 0.5);
+            padding: 8px; 
+            border-radius: 6px; 
+            border-left: 3px solid; 
+            cursor: pointer; 
+            font-size: 0.85rem;
+            border: 1px solid #555;
+        }
+        .property-item:hover { background: rgba(100, 100, 140, 0.6); }
+        .property-item-name { font-weight: 700; color: #FFD700; }
+        .property-item-info { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header" style="grid-column: 1 / -1;">
+            <h1>⭐ STAR WARS</h1>
+            <p>GALACTIC MONOPOLY</p>
+        </div>
+
+        <div class="status-bar">
+            <span id="statusBar">🎮 Esperando jugadores...</span>
+        </div>
+
+        <!-- PANEL IZQUIERDO -->
+        <div class="side-panel">
+            <div>
+                <div class="section-title">👥 JUGADORES</div>
+                <div id="playersContainer"></div>
+            </div>
+
+            <div class="controls-section">
+                <button class="btn-primary" onclick="rollDice()">🎲 LANZAR DADOS</button>
+                <div class="dice-container">
+                    <div class="dice" id="dice1">-</div>
+                    <div class="dice" id="dice2">-</div>
+                </div>
+                <div class="total-roll" id="totalRoll"></div>
+                <button class="btn-secondary" onclick="newGame()">🔄 NUEVO JUEGO</button>
+            </div>
+
+            <div>
+                <div class="section-title">📡 REGISTRO</div>
+                <div class="game-log" id="gameLog"></div>
+            </div>
+        </div>
+
+        <!-- TABLERO CENTRAL -->
+        <div class="board-wrapper">
+            <div class="monopoly-board" id="board"></div>
+        </div>
+
+        <!-- PANEL DERECHO -->
+        <div class="side-panel">
+            <div id="rightPanel"></div>
+        </div>
+    </div>
+
+    <!-- MODAL SETUP -->
+    <div class="modal" id="setupModal">
+        <div class="modal-content">
+            <div class="modal-header">⚔️ CONFIGURAR BATALLA</div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>¿Cuántos Jedi? (2-4)</label>
+                    <input type="number" id="playerCount" min="2" max="4" value="2">
+                </div>
+                <div id="playersSetup"></div>
+                <div class="input-group">
+                    <label>💰 Créditos Galácticos Iniciales</label>
+                    <input type="number" id="initialMoney" min="100" value="500" step="50">
+                </div>
+                <div class="input-group">
+                    <label>🏰 ¿Repartir Planetas al inicio?</label>
+                    <select id="distributeProperties">
+                        <option value="no">No</option>
+                        <option value="yes">Sí (equitativo)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="startGame()">Comenzar Batalla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PROPIEDAD -->
+    <div class="modal" id="propertyModal">
+        <div class="modal-content">
+            <div class="modal-header" id="propertyTitle"></div>
+            <div class="modal-body" id="propertyInfo"></div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="buyBtn" onclick="buyProperty()">💰 Conquistar</button>
+                <button class="btn-primary" id="auctionBtn" onclick="showAuctionModal()" style="background: linear-gradient(135deg, #FF4500, #FF0000);">🔨 Batalla</button>
+                <button class="btn-secondary" onclick="closePropertyModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SUBASTA/BATALLA -->
+    <div class="modal" id="auctionModal">
+        <div class="modal-content">
+            <div class="modal-header">⚔️ BATALLA POR PLANETA</div>
+            <div style="background: linear-gradient(135deg, #FFD700, #FFA500); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 2px solid #FF4500;">
+                <h3 id="auctionPropertyName" style="color: #000; margin-bottom: 8px; font-size: 1rem; font-weight: 900;"></h3>
+                <div style="font-size: 0.9rem; color: #000;">
+                    <div><strong>Oferta mínima:</strong> 20 Créditos</div>
+                    <div id="auctionCurrentBid" style="margin-top: 5px; font-size: 1.1rem; font-weight: bold;">Oferta actual: 20 Créditos</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>🎯 ¿Quién batalla?</label>
+                <select id="auctionPlayerSelect" style="width: 100%; padding: 8px; border: 2px solid #FFD700; border-radius: 5px; font-size: 0.9rem; background: #1a1a1a; color: #FFD700;">
+                    <option value="">-- Selecciona jugador --</option>
+                </select>
+            </div>
+
+            <div style="background: rgba(80, 80, 120, 0.5); padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #FFD700;">
+                <div style="font-weight: 700; margin-bottom: 8px; color: #FFD700;">⚔️ Historial de Batalla:</div>
+                <div id="auctionBidsContainer" style="max-height: 150px; overflow-y: auto;">
+                    <p style="color: #999; text-align: center; font-size: 0.85rem;">Sin ofertas aún...</p>
+                </div>
+            </div>
+
+            <div style="background: rgba(20, 20, 40, 0.8); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #555;">
+                <div style="margin-bottom: 10px;">
+                    <div style="font-size: 0.85rem; color: #FFD700; margin-bottom: 5px;">💰 <strong id="auctionNextBid">Próxima oferta: 40 Créditos</strong></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="btn-primary" onclick="increaseBid()" style="background: linear-gradient(135deg, #00FF00, #00CC00);">⬆️ +20</button>
+                    <button class="btn-primary" onclick="increaseBid()" style="background: linear-gradient(135deg, #00FF00, #00CC00);">⬆️ +20</button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="confirmBid()" style="flex: 1;">✅ Confirmar</button>
+                <button class="btn-secondary" onclick="withdrawBid()" style="flex: 1;">❌ Retirarse</button>
+                <button class="btn-secondary" onclick="finishAuction()" style="flex: 1;">🏁 Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CÁRCEL/CAPTURA -->
+    <div class="modal" id="jailModal">
+        <div class="modal-content">
+            <div class="modal-header" style="color: #FF6B6B;">🚨 ¡CAPTURADO!</div>
+            <div class="modal-body">
+                <p>¿Cómo escapas?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="payJailFine()" style="flex: 1;">💰 Pagar 100 Créditos</button>
+                <button class="btn-primary" onclick="rollForJail()" style="flex: 1; background: linear-gradient(135deg, #4DB8FF, #00FFFF);">⚡ Usar la Fuerza</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EVENTOS -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div style="background: linear-gradient(135deg, #4DB8FF, #00FF7F); color: #000; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 900; text-align: center; text-transform: uppercase;" id="eventTitle"></div>
+            <div class="modal-body" id="eventBody"></div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeEventModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL UBICACIÓN -->
+    <div class="modal" id="locationModal">
+        <div class="modal-content">
+            <div class="modal-header">🚀 TELETRANSPORTE</div>
+            <div class="modal-body" style="margin-bottom: 12px;">Viaja a cualquier planeta por 5 Créditos</div>
+            <div id="locationOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;"></div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeLocationModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PERFIL -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header" id="profileTitle"></div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('stats')">📊 STATS</button>
+                <button class="tab-btn" onclick="switchTab('properties')">🌍 PLANETAS</button>
+            </div>
+            <div class="tab-content active" id="statsTab"></div>
+            <div class="tab-content" id="propertiesTab"></div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeProfileModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const properties = [
+            { id: 0, name: 'CORUSCANT', type: 'corner', price: 0, position: 0, faction: 'republic', description: 'Capital de la República Galáctica. Centro de poder político y administración intergaláctica.' },
+            { id: 1, name: 'Tatooine', type: 'property', price: 60, color: 'jedi', position: 1, faction: 'neutral', baseRent: [2, 6, 18, 30, 90, 160], description: 'Planeta desértico de arenas salvajes. Hogar de bandidos y comerciantes intergalácticos.' },
+            { id: 2, name: 'Evento', type: 'event', price: 0, position: 2 },
+            { id: 3, name: 'Geonosis', type: 'property', price: 60, color: 'sith', position: 3, faction: 'separatist', baseRent: [4, 12, 36, 60, 180, 320], description: 'Fortaleza Separatista. Fábricas de droidekas y batallas épicas de las Guerras Clon.' },
+            { id: 4, name: 'Impuesto Imperial', type: 'tax', price: 200, position: 4 },
+            { id: 5, name: 'Nave Capitana', type: 'starship', price: 200, position: 5, faction: 'empire' },
+            { id: 6, name: 'Dagobah', type: 'property', price: 100, color: 'jedi', position: 6, faction: 'jedi', baseRent: [6, 18, 54, 90, 270, 450], description: 'Pantano antiguo del Jedi. Hogar del Maestro Yoda y fuente de sabiduría milenaria.' },
+            { id: 7, name: 'Teletransporte', type: 'location', price: 5, position: 7 },
+            { id: 8, name: 'Endor', type: 'property', price: 100, color: 'rebellion', position: 8, faction: 'rebellion', baseRent: [6, 18, 54, 90, 270, 450], description: 'Bosque lunar de los Ewok. Escenario de la batalla final contra el Imperio.' },
+            { id: 9, name: 'Hoth', type: 'property', price: 120, color: 'rebellion', position: 9, faction: 'rebellion', baseRent: [8, 24, 72, 120, 360, 600], description: 'Planeta helado y glacial. Base rebelde secreta atacada por AT-AT Walkers.' },
+            { id: 10, name: 'PRISIÓN IMPERIAL', type: 'corner', price: 0, position: 10, faction: 'empire', description: 'Centro de detención del Imperio. Peligrosa fortaleza de tortura y vigilancia.' },
+            { id: 11, name: 'Naboo', type: 'property', price: 140, color: 'neutral', position: 11, faction: 'neutral', baseRent: [10, 30, 90, 160, 480, 750], description: 'Planeta real con arquitectura elegante. Hogar de la Reina Amidala y los Gungans.' },
+            { id: 12, name: 'Estación Comercial', type: 'outpost', price: 150, position: 12, faction: 'neutral' },
+            { id: 13, name: 'Mustafar', type: 'property', price: 140, color: 'sith', position: 13, faction: 'sith', baseRent: [10, 30, 90, 160, 480, 750], description: 'Planeta volcánico envuelto en lava. Lugar de la caída del Anakin Skywalker.' },
+            { id: 14, name: 'Korriban', type: 'property', price: 160, color: 'sith', position: 14, faction: 'sith', baseRent: [12, 36, 108, 180, 540, 900], description: 'Antigua fortaleza Sith. Sede del poder oscuro y sabiduría antigua.' },
+            { id: 15, name: 'Portaaviones Imperial', type: 'starship', price: 200, position: 15, faction: 'empire' },
+            { id: 16, name: 'Kessel', type: 'property', price: 180, color: 'hutt', position: 16, faction: 'hutt', baseRent: [14, 42, 126, 210, 630, 1100], description: 'Minas peligrosas controladas por Jabba. Fuente de especias valiosas y peligros mortales.' },
+            { id: 17, name: 'Evento', type: 'event', price: 0, position: 17 },
+            { id: 18, name: 'Mos Eisley', type: 'property', price: 180, color: 'hutt', position: 18, faction: 'hutt', baseRent: [14, 42, 126, 210, 630, 1100], description: 'Cantina legendaria en Tatooine. Centro de contratistas, cazarrecompensas e intriga.' },
+            { id: 19, name: 'Tatooine Cantina', type: 'property', price: 200, color: 'neutral', position: 19, faction: 'neutral', baseRent: [16, 48, 144, 240, 720, 1275], description: 'Centro comercial de Tatooine. Punto de encuentro de viajeros intergalácticos.' },
+            { id: 20, name: 'PUERTO ESPACIAL', type: 'corner', price: 0, position: 20, faction: 'neutral' },
+            { id: 21, name: 'Bespin', type: 'property', price: 220, color: 'rebellion', position: 21, faction: 'rebellion', baseRent: [18, 54, 162, 270, 810, 1400], description: 'Ciudad en las nubes. Centro administrativo dirigido por Lando Calrissian.' },
+            { id: 22, name: 'Teletransporte', type: 'location', price: 5, position: 22 },
+            { id: 23, name: 'Alderaan', type: 'property', price: 220, color: 'rebellion', position: 23, faction: 'rebellion', baseRent: [18, 54, 162, 270, 810, 1400], description: 'Planeta noble destruido por la Estrella de la Muerte. Símbolo de resistencia Rebelde.' },
+            { id: 24, name: 'Kashyyyk', type: 'property', price: 240, color: 'jedi', position: 24, faction: 'jedi', baseRent: [20, 60, 180, 300, 900, 1550], description: 'Bosque antiguo de los Wookiees. Planeta de Chewbacca y tradición guerrera.' },
+            { id: 25, name: 'Star Destroyer', type: 'starship', price: 200, position: 25, faction: 'empire' },
+            { id: 26, name: 'Felucia', type: 'property', price: 260, color: 'jedi', position: 26, faction: 'jedi', baseRent: [22, 66, 198, 330, 990, 1700], description: 'Selva exótica bioluminiscente. Escenario de combates Jedi contra Separatistas.' },
+            { id: 27, name: 'Utapau', type: 'property', price: 260, color: 'sith', position: 27, faction: 'sith', baseRent: [22, 66, 198, 330, 990, 1700], description: 'Plataforma aérea erosionada. Escenario del duelo épico de Obi-Wan vs Grievous.' },
+            { id: 28, name: 'Puesto Comercial Hutt', type: 'outpost', price: 150, position: 28, faction: 'hutt' },
+            { id: 29, name: 'Scarif', type: 'property', price: 280, color: 'empire', position: 29, faction: 'empire', baseRent: [24, 72, 216, 360, 1080, 1900], description: 'Base Imperial tropical. Almacén de secretos y defensa de la Death Star.' },
+            { id: 30, name: 'ATRAPADO POR VADER', type: 'corner', price: 0, position: 30, faction: 'empire', description: 'El poder del lado oscuro. Encarcelado por las fuerzas imperiales.' },
+            { id: 31, name: 'Mon Cala', type: 'property', price: 300, color: 'rebellion', position: 31, faction: 'rebellion', baseRent: [26, 78, 234, 390, 1170, 2000], description: 'Planeta acuático rebelde. Reino sumergido de defensa intergaláctica.' },
+            { id: 32, name: 'Evento', type: 'event', price: 0, position: 32 },
+            { id: 33, name: 'Rodia', type: 'property', price: 300, color: 'jedi', position: 33, faction: 'jedi', baseRent: [26, 78, 234, 390, 1170, 2000], description: 'Planeta mercantil Jedi. Centro de comercio y diplomacia galácticos.' },
+            { id: 34, name: 'Mustafar Shadow', type: 'property', price: 320, color: 'sith', position: 34, faction: 'sith', baseRent: [28, 84, 252, 420, 1260, 2150], description: 'Extensión volcánica de poder Sith. Fortaleza de industria y magia oscura.' },
+            { id: 35, name: 'Halcón Milenario', type: 'starship', price: 200, position: 35, faction: 'rebellion' },
+            { id: 36, name: 'Teletransporte', type: 'location', price: 5, position: 36 },
+            { id: 37, name: 'Palacio Imperial', type: 'property', price: 350, color: 'empire', position: 37, faction: 'empire', baseRent: [35, 105, 315, 525, 1575, 2100], description: 'Sede del Emperador. Corazón del Imperio Galáctico y poder absoluto.' },
+            { id: 38, name: 'Cuota de Impuesto Sith', type: 'tax', price: 100, position: 38 },
+            { id: 39, name: 'Estrella de la Muerte', type: 'property', price: 400, color: 'empire', position: 39, faction: 'empire', baseRent: [50, 150, 450, 625, 750, 1000], description: 'Arma suprema del Imperio. Estación de combate capaz de destruir mundos enteros.' }
+        ];
+
+        const playerColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#6BCB77'];
+        const eventCards = [
+            { text: '⚡ ¡Rayo de Fuerza! +1 Nivel todos tus planetas', action: (p, g) => {
+                g.players.forEach(pl => {
+                    pl.properties.forEach(propId => {
+                        const prop = properties[propId];
+                        if (prop.owner === pl.id && prop.type === 'property') {
+                            prop.rentLevel = Math.min(5, (prop.rentLevel || 1) + 1);
+                        }
+                    });
+                });
+            }},
+            { text: '🌟 ¡PODER ABSOLUTO! Todos tus planetas suben +1', action: (p, g) => {
+                g.players.forEach(pl => {
+                    pl.properties.forEach(propId => {
+                        const prop = properties[propId];
+                        if (prop.owner === pl.id && prop.type === 'property') {
+                            prop.rentLevel = Math.min(5, (prop.rentLevel || 1) + 1);
+                        }
+                    });
+                });
+            }},
+            { text: '🚀 ¡Expansión Galáctica! +1 Nivel a todos', action: (p, g) => {
+                g.players.forEach(pl => {
+                    pl.properties.forEach(propId => {
+                        const prop = properties[propId];
+                        if (prop.owner === pl.id && prop.type === 'property') {
+                            prop.rentLevel = Math.min(5, (prop.rentLevel || 1) + 1);
+                        }
+                    });
+                });
+            }},
+            { text: '💥 ¡EXPLOSIÓN! -1 Nivel todos', action: (p, g) => {
+                g.players.forEach(pl => {
+                    pl.properties.forEach(propId => {
+                        const prop = properties[propId];
+                        if (prop.owner === pl.id && prop.type === 'property') {
+                            prop.rentLevel = Math.max(1, (prop.rentLevel || 1) - 1);
+                        }
+                    });
+                });
+            }},
+            { text: '💰 ¡Botín de Pirata! +150 Créditos', action: (p) => { p.money += 150; } },
+            { text: '💸 Reparaciones de nave -150 Créditos', action: (p) => { p.money -= 150; } },
+            { text: '🎉 ¡Recompensa! Todos te pagan 50 Créditos', action: (p, g) => { g.players.forEach(pl => { if (pl.id !== p.id) { pl.money -= 50; p.money += 50; } }); } },
+            { text: '⚔️ ¡Ataque Sorpresa! -100 Créditos', action: (p) => { p.money -= 100; } },
+            { text: '🛡️ ¡Escudo Deflector! +200 Créditos', action: (p) => { p.money += 200; } },
+        ];
+
+        let game = {
+            players: [],
+            currentPlayerIndex: 0,
+            isRolling: false,
+            dice1: 0,
+            dice2: 0,
+            gameStarted: false,
+            initialMoney: 500,
+            auctionActive: false,
+            auctionProperty: null,
+            auctionBids: {},
+            auctionCurrentBid: 20,
+            auctionTempBid: 0,
+            auctionCurrentPlayer: null,
+        };
+
+        function init() {
+            renderBoard();
+            showSetupModal();
+        }
+
+        function showSetupModal() {
+            const playerCountInput = document.getElementById('playerCount');
+            const playersSetup = document.getElementById('playersSetup');
+            playerCountInput.addEventListener('change', () => {
+                const count = parseInt(playerCountInput.value);
+                playersSetup.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    playersSetup.innerHTML += `<div class="input-group"><label>Jedi ${i + 1}</label><input type="text" id="playerName${i}" value="Jedi ${i + 1}"></div>`;
+                }
+            });
+            playerCountInput.dispatchEvent(new Event('change'));
+            document.getElementById('setupModal').classList.add('active');
+        }
+
+        function startGame() {
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            const initialMoney = parseInt(document.getElementById('initialMoney').value);
+            const distribute = document.getElementById('distributeProperties').value === 'yes';
+            
+            game.initialMoney = initialMoney;
+            game.players = [];
+            for (let i = 0; i < playerCount; i++) {
+                const name = document.getElementById(`playerName${i}`).value;
+                game.players.push({
+                    id: i,
+                    name: name,
+                    money: initialMoney,
+                    position: 0,
+                    properties: [],
+                    color: playerColors[i],
+                    inJail: false,
+                    jailTurns: 0,
+                    bankrupt: false
+                });
+            }
+            
+            if (distribute) {
+                distributePropertiesEquitably();
+            }
+            
+            game.gameStarted = true;
+            document.getElementById('setupModal').classList.remove('active');
+            updateUI();
+            addLog(`⚔️ ¡Batalla iniciada! ${initialMoney} Créditos c/u`, 'info');
+            if (distribute) {
+                addLog(`🌍 Planetas repartidos equitativamente`, 'success');
+            }
+        }
+
+        function distributePropertiesEquitably() {
+            const ownableProperties = properties.filter(p => p.type === 'property' || p.type === 'starship' || p.type === 'outpost');
+            let playerIndex = 0;
+            
+            ownableProperties.forEach((prop, idx) => {
+                const player = game.players[playerIndex];
+                prop.owner = player.id;
+                prop.rentLevel = 1;
+                player.properties.push(prop.id);
+                player.money -= prop.price;
+                
+                playerIndex = (playerIndex + 1) % game.players.length;
+            });
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            properties.forEach((prop) => {
+                const space = document.createElement('div');
+                space.className = `board-space space-${prop.position}`;
+                space.id = `space-${prop.position}`;
+                
+                if (prop.type === 'corner') space.classList.add('corner-space');
+                else if (prop.type === 'property') space.classList.add('street-property', prop.color);
+                else if (prop.type === 'starship') space.classList.add('starship');
+                else if (prop.type === 'outpost') space.classList.add('outpost');
+                else if (prop.type === 'event') space.classList.add('event-space');
+                else if (prop.type === 'location') space.classList.add('location-space');
+
+                space.innerHTML = `<span>${prop.name}</span><div class="players-on-space" id="players-${prop.position}"></div><div class="rent-level" id="rentLevel-${prop.position}"></div>`;
+                space.addEventListener('click', () => {
+                    if ((prop.type === 'property' || prop.type === 'starship' || prop.type === 'outpost') && !game.auctionActive) showPropertyModal(prop);
+                });
+                board.appendChild(space);
+            });
+        }
+
+        function rollDice() {
+            if (game.isRolling || !game.gameStarted) return;
+            const player = getCurrentPlayer();
+            if (player.inJail && player.jailTurns > 0) {
+                player.jailTurns--;
+                addLog(`${player.name} capturado (${player.jailTurns} turnos)`, 'warning');
+                setTimeout(() => endTurn(), 1500);
+                return;
+            }
+            if (player.inJail) player.inJail = false;
+
+            game.isRolling = true;
+            const d1 = document.getElementById('dice1');
+            const d2 = document.getElementById('dice2');
+            d1.classList.add('rolling');
+            d2.classList.add('rolling');
+
+            setTimeout(() => {
+                game.dice1 = Math.floor(Math.random() * 6) + 1;
+                game.dice2 = Math.floor(Math.random() * 6) + 1;
+                d1.classList.remove('rolling');
+                d2.classList.remove('rolling');
+                d1.textContent = game.dice1;
+                d2.textContent = game.dice2;
+                document.getElementById('totalRoll').textContent = `${game.dice1 + game.dice2}`;
+                movePlayer(game.dice1 + game.dice2);
+                if (game.dice1 === game.dice2) {
+                    addLog(`${player.name} ¡DOBLES! ⚡`, 'success');
+                    game.isRolling = false;
+                } else {
+                    setTimeout(() => endTurn(), 2500);
+                }
+                updateUI();
+            }, 300);
+        }
+
+        function movePlayer(steps) {
+            const player = getCurrentPlayer();
+            const oldPos = player.position;
+            player.position = (player.position + steps) % 40;
+            if (player.position < oldPos) {
+                player.money += 200;
+                addLog(`${player.name} pasó CORUSCANT +200 Créditos`, 'success');
+            }
+            updatePlayerPositions();
+            checkSpace(player.position);
+        }
+
+        function checkSpace(position) {
+            const prop = properties[position];
+            const player = getCurrentPlayer();
+            switch (prop.type) {
+                case 'property':
+                case 'starship':
+                case 'outpost':
+                    if (prop.owner !== undefined) {
+                        if (prop.owner !== player.id) payRent(player, prop);
+                    } else {
+                        showPropertyModal(prop);
+                    }
+                    break;
+                case 'tax':
+                    player.money -= prop.price;
+                    addLog(`${player.name} Impuesto Imperial -${prop.price} Créditos`, 'warning');
+                    break;
+                case 'event':
+                    drawEvent(player);
+                    break;
+                case 'location':
+                    showLocationModal();
+                    break;
+                case 'corner':
+                    if (position === 30) {
+                        showJailModal();
+                    }
+                    break;
+            }
+        }
+
+        function showJailModal() {
+            addLog(`${getCurrentPlayer().name} ¡Capturado por Vader!`, 'warning');
+            document.getElementById('jailModal').classList.add('active');
+        }
+
+        function payJailFine() {
+            const player = getCurrentPlayer();
+            if (player.money >= 100) {
+                player.money -= 100;
+                player.inJail = false;
+                addLog(`${player.name} pagó 100 Créditos y escapó`, 'success');
+                document.getElementById('jailModal').classList.remove('active');
+                updateUI();
+                setTimeout(() => endTurn(), 2000);
+            } else {
+                alert('❌ No tienes 100 Créditos');
+            }
+        }
+
+        function rollForJail() {
+            const player = getCurrentPlayer();
+            const d1 = Math.floor(Math.random() * 6) + 1;
+            const d2 = Math.floor(Math.random() * 6) + 1;
+            
+            if (d1 === d2) {
+                player.inJail = false;
+                addLog(`${player.name} ¡Usó la Fuerza y escapó! ⚡`, 'success');
+                document.getElementById('jailModal').classList.remove('active');
+                updateUI();
+                setTimeout(() => { 
+                    movePlayer(d1 + d2);
+                    checkSpace(player.position);
+                    if (d1 === d2) {
+                        game.isRolling = false;
+                    } else {
+                        setTimeout(() => endTurn(), 2500);
+                    }
+                }, 2000);
+            } else {
+                player.inJail = true;
+                player.jailTurns = 3;
+                addLog(`${player.name} falló y sigue capturado (3 turnos)`, 'warning');
+                document.getElementById('jailModal').classList.remove('active');
+                updateUI();
+                setTimeout(() => endTurn(), 2000);
+            }
+        }
+
+        function drawEvent(player) {
+            const card = eventCards[Math.floor(Math.random() * eventCards.length)];
+            showEventModal('🌠 EVENTO GALÁCTICO', card.text);
+            card.action(player, game);
+            updateUI();
+        }
+
+        function payRent(player, prop) {
+            const owner = game.players[prop.owner];
+            const level = prop.rentLevel || 1;
+            let rent = 0;
+            if (prop.type === 'property') {
+                rent = prop.baseRent[level - 1] || prop.baseRent[0];
+            } else if (prop.type === 'starship') {
+                const owned = owner.properties.filter(id => properties[id].type === 'starship').length;
+                rent = 50 * Math.pow(2, Math.min(owned - 1, 3));
+            } else if (prop.type === 'outpost') {
+                rent = Math.floor(player.money * 0.15);
+            }
+            if (player.money < rent) {
+                player.money = 0;
+                player.bankrupt = true;
+                addLog(`${player.name} ¡DESTRUIDO!`, 'warning');
+            } else {
+                player.money -= rent;
+                owner.money += rent;
+                addLog(`${player.name} paga ${rent} Créditos a ${owner.name}`, 'warning');
+            }
+            if (prop.type === 'property') {
+                prop.rentLevel = Math.min(5, (prop.rentLevel || 1) + 1);
+                addLog(`🚀 ${prop.name} NIVEL ${prop.rentLevel}!`, 'success');
+            }
+        }
+
+        function showPropertyModal(prop) {
+            if (!game.gameStarted) return;
+            const player = getCurrentPlayer();
+            document.getElementById('propertyTitle').textContent = prop.name;
+            let html = `<div class="property-info">`;
+            
+            // Descripción del planeta
+            if (prop.description) {
+                html += `<div style="background: rgba(100, 100, 140, 0.5); padding: 8px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #4DB8FF; font-size: 0.85rem; color: #ccc; line-height: 1.4;">
+                    "${prop.description}"
+                </div>`;
+            }
+            
+            html += `<div class="property-row"><span>Precio:</span><strong>${prop.price} Créditos</strong></div>`;
+            if (prop.owner === undefined) {
+                html += `<div class="property-row"><span>Estado:</span><strong style="color: #00FF00;">DISPONIBLE</strong></div>`;
+            } else {
+                html += `<div class="property-row"><span>Dueño:</span><strong style="cursor: pointer; color: #4DB8FF;" onclick="showProfile(${prop.owner})">${game.players[prop.owner].name}</strong></div>`;
+                const level = prop.rentLevel || 1;
+                html += `<div class="property-row"><span>Nivel:</span><strong>${level}/5</strong></div>`;
+            }
+            html += `<div class="property-row"><span>Tus Créditos:</span><strong>${player.money}</strong></div>`;
+            if (prop.baseRent) {
+                html += `<div style="margin-top: 8px; font-size: 0.8rem; color: #ccc;"><strong>Renta:</strong>`;
+                prop.baseRent.forEach((r, i) => {
+                    html += `<div>Lv${i+1}: ${r} Créditos</div>`;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+            document.getElementById('propertyInfo').innerHTML = html;
+            const buyBtn = document.getElementById('buyBtn');
+            const auctionBtn = document.getElementById('auctionBtn');
+            if (prop.owner === undefined) {
+                buyBtn.style.display = player.money >= prop.price ? 'inline-block' : 'none';
+                auctionBtn.style.display = 'inline-block';
+            } else {
+                buyBtn.style.display = 'none';
+                auctionBtn.style.display = 'none';
+            }
+            window.selectedProperty = prop;
+            document.getElementById('propertyModal').classList.add('active');
+        }
+
+        function buyProperty(prop = window.selectedProperty) {
+            const player = getCurrentPlayer();
+            if (player.money >= prop.price) {
+                player.money -= prop.price;
+                prop.owner = player.id;
+                prop.rentLevel = 1;
+                player.properties.push(prop.id);
+                addLog(`${player.name} conquistó ${prop.name}`, 'success');
+                closePropertyModal();
+                updateUI();
+            }
+        }
+
+        function showAuctionModal(prop = window.selectedProperty) {
+            closePropertyModal();
+            game.auctionActive = true;
+            game.auctionProperty = prop;
+            game.auctionBids = {};
+            game.auctionCurrentBid = 20;
+            game.auctionTempBid = 0;
+            game.auctionCurrentPlayer = null;
+            
+            document.getElementById('auctionPropertyName').textContent = prop.name;
+            document.getElementById('auctionCurrentBid').textContent = `Oferta actual: ${game.auctionCurrentBid} Créditos`;
+            document.getElementById('auctionNextBid').textContent = `Próxima oferta: ${game.auctionCurrentBid + 20} Créditos`;
+            
+            const select = document.getElementById('auctionPlayerSelect');
+            select.innerHTML = '<option value="">-- Selecciona jugador --</option>';
+            game.players.forEach((p, i) => {
+                if (!p.bankrupt) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = p.name;
+                    select.appendChild(opt);
+                }
+            });
+            
+            document.getElementById('auctionBidsContainer').innerHTML = '<p style="color: #999; text-align: center; font-size: 0.85rem;">Sin ofertas aún...</p>';
+            document.getElementById('auctionModal').classList.add('active');
+            addLog(`⚔️ BATALLA: ${prop.name}`, 'info');
+        }
+
+        function increaseBid() {
+            const select = document.getElementById('auctionPlayerSelect');
+            if (select.value === '') {
+                alert('❌ Selecciona un jugador primero');
+                return;
+            }
+            
+            const playerId = parseInt(select.value);
+            const player = game.players[playerId];
+            const nextBid = game.auctionCurrentBid + 20;
+            
+            if (player.money < nextBid) {
+                alert(`❌ ${player.name} no tiene suficientes Créditos (${nextBid})`);
+                return;
+            }
+            
+            game.auctionCurrentPlayer = playerId;
+            game.auctionTempBid = nextBid;
+            
+            document.getElementById('auctionNextBid').textContent = `Próxima oferta: ${nextBid + 20} Créditos`;
+            select.style.borderColor = '#00FF00';
+            select.style.backgroundColor = '#1a3a1a';
+            
+            addLog(`${player.name} ofrece ${nextBid} Créditos`, 'info');
+        }
+
+        function confirmBid() {
+            if (game.auctionCurrentPlayer === null) {
+                alert('❌ Debes aumentar la oferta primero');
+                return;
+            }
+            
+            const player = game.players[game.auctionCurrentPlayer];
+            game.auctionCurrentBid = game.auctionTempBid;
+            game.auctionBids[game.auctionCurrentPlayer] = game.auctionCurrentBid;
+            
+            document.getElementById('auctionCurrentBid').textContent = `Oferta actual: ${game.auctionCurrentBid} Créditos`;
+            document.getElementById('auctionNextBid').textContent = `Próxima oferta: ${game.auctionCurrentBid + 20} Créditos`;
+            
+            const select = document.getElementById('auctionPlayerSelect');
+            select.value = '';
+            select.style.borderColor = '#FFD700';
+            select.style.backgroundColor = '#1a1a1a';
+            game.auctionCurrentPlayer = null;
+            game.auctionTempBid = 0;
+            
+            updateAuctionDisplay();
+            addLog(`✅ ${player.name} ofrece ${game.auctionCurrentBid} Créditos`, 'success');
+        }
+
+        function updateAuctionDisplay() {
+            const container = document.getElementById('auctionBidsContainer');
+            container.innerHTML = '';
+            const sortedBids = Object.entries(game.auctionBids).sort((a, b) => b[1] - a[1]);
+            
+            if (sortedBids.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; font-size: 0.85rem;">Sin ofertas aún...</p>';
+                return;
+            }
+            
+            sortedBids.forEach(([pid, bid], idx) => {
+                const d = document.createElement('div');
+                d.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; font-size: 0.9rem; background: ' + (idx === 0 ? 'rgba(255, 215, 0, 0.1)' : 'transparent');
+                const medal = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : '🥉');
+                d.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>${medal}</span>
+                        <strong style="color: #FFD700;">${game.players[pid].name}</strong>
+                    </div>
+                    <strong style="color: #00FF00; font-size: 1rem;">${bid} Créditos</strong>
+                `;
+                container.appendChild(d);
+            });
+        }
+
+        function withdrawBid() {
+            const select = document.getElementById('auctionPlayerSelect');
+            if (select.value === '') {
+                alert('❌ Selecciona un jugador para retirarse');
+                return;
+            }
+            
+            const playerId = parseInt(select.value);
+            delete game.auctionBids[playerId];
+            
+            select.value = '';
+            select.style.borderColor = '#FFD700';
+            select.style.backgroundColor = '#1a1a1a';
+            game.auctionCurrentPlayer = null;
+            game.auctionTempBid = 0;
+            
+            updateAuctionDisplay();
+            addLog(`${game.players[playerId].name} se retiró de la batalla`, 'warning');
+        }
+
+        function finishAuction() {
+            const prop = game.auctionProperty;
+            let winner = null, maxBid = 0;
+            Object.entries(game.auctionBids).forEach(([pid, bid]) => {
+                if (bid > maxBid) {
+                    maxBid = bid;
+                    winner = parseInt(pid);
+                }
+            });
+            if (winner !== null) {
+                const w = game.players[winner];
+                w.money -= maxBid;
+                prop.owner = winner;
+                prop.rentLevel = 1;
+                w.properties.push(prop.id);
+                addLog(`⚔️ ${w.name} conquistó ${prop.name} por ${maxBid} Créditos`, 'success');
+            } else {
+                addLog(`❌ La batalla fue cancelada (sin ofertas)`, 'warning');
+            }
+            game.auctionActive = false;
+            game.auctionBids = {};
+            game.auctionCurrentBid = 20;
+            document.getElementById('auctionModal').classList.remove('active');
+            updateUI();
+        }
+
+        function showLocationModal() {
+            const container = document.getElementById('locationOptions');
+            container.innerHTML = '';
+            properties.filter(p => p.type === 'property').forEach(prop => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-secondary';
+                btn.style.fontSize = '0.8rem';
+                btn.textContent = prop.name.substring(0, 12);
+                btn.onclick = () => {
+                    const p = getCurrentPlayer();
+                    if (p.money >= 5) {
+                        p.money -= 5;
+                        p.position = prop.position;
+                        addLog(`${p.name} se teletransportó a ${prop.name}`, 'success');
+                        closeLocationModal();
+                        checkSpace(prop.position);
+                        updateUI();
+                    }
+                };
+                container.appendChild(btn);
+            });
+            document.getElementById('locationModal').classList.add('active');
+        }
+
+        function showProfile(playerId) {
+            const p = game.players[playerId];
+            const propVal = p.properties.reduce((s, id) => s + properties[id].price, 0);
+            const total = p.money + propVal;
+            
+            document.getElementById('profileTitle').textContent = `⭐ ${p.name}`;
+            document.getElementById('statsTab').innerHTML = `
+                <div class="property-info">
+                    <div class="property-row"><span>Créditos</span><strong style="color: #00FF00;">${p.money}</strong></div>
+                    <div class="property-row"><span>Planetas</span><strong>${p.properties.length}</strong></div>
+                    <div class="property-row"><span>Valor Planetas</span><strong>${propVal}</strong></div>
+                    <div class="property-row"><span style="font-weight: 700;">PODER TOTAL</span><strong style="color: #FFD700; font-size: 1.1rem;">${total}</strong></div>
+                </div>
+            `;
+            
+            let propsHtml = '';
+            p.properties.forEach(pid => {
+                const prop = properties[pid];
+                const level = prop.rentLevel || 1;
+                propsHtml += `
+                    <div class="property-item" style="border-left-color: ${prop.color || '#FFD700'};">
+                        <div class="property-item-name">${prop.name}</div>
+                        <div class="property-item-info">Nivel ${level}/5 | Renta: ${prop.baseRent ? prop.baseRent[level-1] : 'N/A'} Créditos</div>
+                    </div>
+                `;
+            });
+            document.getElementById('propertiesTab').innerHTML = propsHtml || '<p style="color: #999;">Sin planetas</p>';
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        function closePropertyModal() { document.getElementById('propertyModal').classList.remove('active'); }
+        function closeLocationModal() { document.getElementById('locationModal').classList.remove('active'); }
+        function closeProfileModal() { document.getElementById('profileModal').classList.remove('active'); }
+        function showEventModal(title, msg) {
+            document.getElementById('eventTitle').textContent = title;
+            document.getElementById('eventBody').textContent = msg;
+            document.getElementById('eventModal').classList.add('active');
+        }
+        function closeEventModal() { document.getElementById('eventModal').classList.remove('active'); }
+
+        function getCurrentPlayer() { return game.players[game.currentPlayerIndex]; }
+        function endTurn() {
+            const activos = game.players.filter(p => !p.bankrupt).length;
+            if (activos === 1) {
+                const winner = game.players.find(p => !p.bankrupt);
+                addLog(`¡¡¡${winner.name} ES EL EMPERADOR GALÁCTICO!!! 🌟`, 'success');
+                return;
+            }
+            let nextIdx = (game.currentPlayerIndex + 1) % game.players.length;
+            while (game.players[nextIdx].bankrupt) {
+                nextIdx = (nextIdx + 1) % game.players.length;
+            }
+            game.currentPlayerIndex = nextIdx;
+            game.dice1 = 0;
+            game.dice2 = 0;
+            document.getElementById('dice1').textContent = '-';
+            document.getElementById('dice2').textContent = '-';
+            document.getElementById('totalRoll').textContent = '';
+            game.isRolling = false;
+            updateUI();
+        }
+
+        function updateUI() {
+            updateStatusBar();
+            updatePlayersList();
+            updatePlayerPositions();
+            updateRentLevels();
+            updateRightPanel();
+        }
+
+        function updateStatusBar() {
+            const p = getCurrentPlayer();
+            document.getElementById('statusBar').textContent = `⭐ ${p.name}${p.inJail ? ' (CAPTURADO)' : ''} | 💰 ${p.money} Créditos`;
+        }
+
+        function updatePlayersList() {
+            const container = document.getElementById('playersContainer');
+            container.innerHTML = '';
+            game.players.forEach((p, i) => {
+                const card = document.createElement('div');
+                card.className = 'player-card' + (i === game.currentPlayerIndex && !p.bankrupt ? ' active' : '');
+                card.style.borderLeftColor = p.color;
+                card.onclick = () => showProfile(i);
+                card.innerHTML = `
+                    <div class="player-name">
+                        <div class="player-color-dot" style="background: ${p.color};"></div>
+                        <span>${p.name}</span>
+                    </div>
+                    ${p.bankrupt ? '<span style="color: #FF6B6B; font-weight: 700;">💥 DESTRUIDO</span>' : `
+                        <div class="player-stat"><span>💰</span><span>${p.money}</span></div>
+                        <div class="player-stat"><span>🌍</span><span>${p.properties.length}</span></div>
+                    `}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updatePlayerPositions() {
+            document.querySelectorAll('.players-on-space').forEach(e => e.innerHTML = '');
+            game.players.forEach(p => {
+                if (p.bankrupt) return;
+                const el = document.getElementById(`players-${p.position}`);
+                if (el) {
+                    const token = document.createElement('div');
+                    token.className = 'player-token';
+                    token.style.background = p.color;
+                    el.appendChild(token);
+                }
+            });
+        }
+
+        function updateRentLevels() {
+            properties.forEach(p => {
+                if (p.type === 'property' && p.owner !== undefined) {
+                    const el = document.getElementById(`rentLevel-${p.position}`);
+                    if (el) {
+                        el.textContent = `${p.rentLevel || 1}`;
+                        el.style.display = 'flex';
+                    }
+                }
+            });
+        }
+
+        function updateRightPanel() {
+            const panel = document.getElementById('rightPanel');
+            if (!game.gameStarted) {
+                panel.innerHTML = '<p style="color: #999; text-align: center;">Esperando...</p>';
+                return;
+            }
+            const p = getCurrentPlayer();
+            const propVal = p.properties.reduce((s, id) => s + properties[id].price, 0);
+            panel.innerHTML = `
+                <div>
+                    <div class="section-title">💎 PODER</div>
+                    <div class="property-info" style="padding: 10px;">
+                        <div class="property-row"><span>Créditos</span><strong style="color: #00FF00;">${p.money}</strong></div>
+                        <div class="property-row"><span>Planetas</span><strong>${propVal}</strong></div>
+                        <div class="property-row"><span style="font-weight: 700;">TOTAL</span><strong style="color: #FFD700;">${p.money + propVal}</strong></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">🌍 MIS PLANETAS (${p.properties.length})</div>
+                    <div style="display: grid; gap: 6px; max-height: 200px; overflow-y: auto;">
+                        ${p.properties.map(id => {
+                            const prop = properties[id];
+                            const level = prop.rentLevel || 1;
+                            return `<div class="property-item" style="border-left-color: ${prop.color || '#FFD700'}; font-size: 0.8rem;">
+                                <div class="property-item-name">${prop.name}</div>
+                                <div class="property-item-info">Nivel ${level}/5</div>
+                            </div>`;
+                        }).join('') || '<p style="color: #999; font-size: 0.85rem;">Ninguno</p>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function addLog(msg, type = 'info') {
+            const log = document.getElementById('gameLog');
+            const e = document.createElement('div');
+            e.className = `log-entry ${type}`;
+            e.textContent = msg;
+            log.insertBefore(e, log.firstChild);
+            while (log.children.length > 20) log.removeChild(log.lastChild);
+        }
+
+        function newGame() {
+            if (confirm('¿Nueva batalla galáctica?')) location.reload();
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
