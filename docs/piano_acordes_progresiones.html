@@ -7,11 +7,8 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* ---- Piano específico ---- */
-      .piano-wrap {
-        overflow-x: auto;
-        margin: 1.5rem 0;
-      }
+      /* ---- Piano base ---- */
+      .piano-wrap { overflow-x: auto; margin: 1.5rem 0; }
 
       .piano {
         display: flex;
@@ -23,167 +20,182 @@
       }
 
       .white-key {
-        width: 36px;
-        height: 120px;
+        width: 36px; height: 120px;
         background: #fff;
         border: 1.5px solid #ccc;
         border-radius: 0 0 5px 5px;
-        position: relative;
-        cursor: pointer;
-        transition: background 0.1s;
-        z-index: 1;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        padding-bottom: 6px;
-        font-size: 10px;
-        color: #999;
-        font-weight: 600;
+        position: relative; cursor: pointer;
+        transition: background 0.1s; z-index: 1;
+        display: flex; align-items: flex-end; justify-content: center;
+        padding-bottom: 6px; font-size: 10px; color: #999; font-weight: 600;
       }
-
-      .white-key.active {
-        background: #b2f0f7;
-      }
+      .white-key.active { background: #b2f0f7; }
 
       .black-key {
-        width: 22px;
-        height: 72px;
+        width: 22px; height: 72px;
         background: #222;
         border-radius: 0 0 4px 4px;
-        position: absolute;
-        cursor: pointer;
-        transition: background 0.1s;
-        z-index: 2;
-        top: 0;
+        position: absolute; cursor: pointer;
+        transition: background 0.1s; z-index: 2; top: 0;
       }
+      .black-key.active { background: #00aebb; }
 
-      .black-key.active {
-        background: #00aebb;
-      }
-
-      /* posiciones teclas negras dentro del octavo */
       .bk-1  { left: calc(1 * 36px - 11px); }
       .bk-2  { left: calc(2 * 36px - 11px); }
       .bk-4  { left: calc(4 * 36px - 11px); }
       .bk-5  { left: calc(5 * 36px - 11px); }
       .bk-6  { left: calc(6 * 36px - 11px); }
 
+      /* ---- Mini piano para ventanas ---- */
+      .mini-piano {
+        display: flex;
+        position: relative;
+        height: 90px;
+        width: max-content;
+        margin: 0 auto;
+        user-select: none;
+      }
+      .mini-piano .white-key {
+        width: 28px; height: 90px;
+        font-size: 9px;
+      }
+      .mini-piano .black-key {
+        width: 17px; height: 55px;
+      }
+      .mini-piano .bk-1 { left: calc(1 * 28px - 8px); }
+      .mini-piano .bk-2 { left: calc(2 * 28px - 8px); }
+      .mini-piano .bk-4 { left: calc(4 * 28px - 8px); }
+      .mini-piano .bk-5 { left: calc(5 * 28px - 8px); }
+      .mini-piano .bk-6 { left: calc(6 * 28px - 8px); }
+
       /* ---- Chord cards ---- */
       .chord-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 1.5rem 0;
+        gap: 1rem; margin: 1.5rem 0;
       }
-
       .chord-card {
         background: #fff6f9;
         border: 1.5px solid #f7c5d3;
-        border-radius: 10px;
-        padding: 1rem;
-        cursor: pointer;
+        border-radius: 10px; padding: 1rem; cursor: pointer;
         transition: border-color 0.2s, transform 0.1s;
       }
-
-      .chord-card:hover {
-        border-color: #00aebb;
-        transform: translateY(-2px);
-      }
-
-      .chord-card h3 {
-        margin: 0 0 0.3rem 0;
-        border: none;
-        font-size: 1.1rem;
-        color: #00aebb;
-      }
-
+      .chord-card:hover { border-color: #00aebb; transform: translateY(-2px); }
+      .chord-card h3 { margin: 0 0 0.3rem 0; border: none; font-size: 1.1rem; color: #00aebb; }
       .chord-card .notes {
-        font-size: 0.85rem;
-        color: #555;
-        font-family: monospace;
-        background: #eef8fa;
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        display: inline-block;
-        margin: 0.2rem 0;
+        font-size: 0.85rem; color: #555; font-family: monospace;
+        background: #eef8fa; padding: 0.2rem 0.5rem; border-radius: 4px;
+        display: inline-block; margin: 0.2rem 0;
       }
+      .chord-card .desc { font-size: 0.82rem; color: #888; margin-top: 0.4rem; }
 
-      .chord-card .desc {
-        font-size: 0.82rem;
-        color: #888;
-        margin-top: 0.4rem;
-      }
-
-      /* ---- Progressions ---- */
+      /* ---- Progressions table ---- */
       .prog-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1rem 0;
-        font-size: 0.9rem;
+        width: 100%; border-collapse: collapse;
+        margin: 1rem 0; font-size: 0.9rem;
       }
-
       .prog-table th {
-        background: #00aebb;
-        color: #fff;
-        padding: 0.5rem 0.8rem;
-        text-align: left;
+        background: #00aebb; color: #fff;
+        padding: 0.5rem 0.8rem; text-align: left;
       }
-
       .prog-table td {
         padding: 0.5rem 0.8rem;
-        border-bottom: 1px solid #eee;
-        vertical-align: middle;
+        border-bottom: 1px solid #eee; vertical-align: middle;
       }
-
-      .prog-table tr:nth-child(even) td {
-        background: #f9feff;
-      }
+      .prog-table tr:nth-child(even) td { background: #f9feff; }
+      .prog-table tbody tr { cursor: pointer; transition: background 0.15s; }
+      .prog-table tbody tr:hover td { background: #e6f9fb !important; }
+      .prog-table tbody tr.selected td { background: #ccf3f8 !important; }
 
       .prog-tag {
-        display: inline-block;
-        background: #eef8fa;
-        color: #00aebb;
-        border-radius: 4px;
-        padding: 0.15rem 0.5rem;
-        font-family: monospace;
-        font-weight: 700;
-        font-size: 0.95rem;
+        display: inline-block; background: #eef8fa; color: #00aebb;
+        border-radius: 4px; padding: 0.15rem 0.5rem;
+        font-family: monospace; font-weight: 700; font-size: 0.95rem;
       }
-
       .genre-badge {
-        display: inline-block;
-        background: #fff0f5;
-        color: #c06;
-        border-radius: 20px;
-        padding: 0.1rem 0.6rem;
-        font-size: 0.78rem;
+        display: inline-block; background: #fff0f5; color: #c06;
+        border-radius: 20px; padding: 0.1rem 0.6rem; font-size: 0.78rem;
         border: 1px solid #f7c5d3;
       }
 
+      /* ---- Ventanas de progresión ---- */
+      #prog-viewer {
+        display: none;
+        background: #f0fbfd;
+        border: 2px solid #00aebb;
+        border-radius: 14px;
+        padding: 1.2rem 1rem 1rem;
+        margin: 1rem 0 1.5rem;
+      }
+      #prog-viewer h3 {
+        margin: 0 0 0.2rem 0; border: none;
+        font-size: 1rem; color: #00aebb;
+      }
+      #prog-viewer .prog-name {
+        font-size: 0.85rem; color: #666; margin-bottom: 0.8rem;
+      }
+
+      .prog-nav {
+        display: flex; align-items: center; justify-content: center;
+        gap: 1rem; margin-bottom: 1rem;
+      }
+      .prog-nav button {
+        background: #00aebb; color: #fff;
+        border: none; border-radius: 6px; padding: 0.35rem 0.9rem;
+        cursor: pointer; font-size: 0.9rem; font-weight: 600;
+        transition: background 0.15s;
+      }
+      .prog-nav button:hover { background: #008fa0; }
+      .prog-nav button:disabled { background: #ccc; cursor: default; }
+      .prog-nav .prog-counter {
+        font-family: monospace; font-size: 0.9rem; color: #555;
+        min-width: 80px; text-align: center;
+      }
+
+      /* Dos ventanas lado a lado */
+      .two-windows {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 540px) {
+        .two-windows { grid-template-columns: 1fr; }
+      }
+
+      .chord-window {
+        background: #fff;
+        border: 1.5px solid #f7c5d3;
+        border-radius: 10px;
+        padding: 0.8rem;
+        text-align: center;
+      }
+      .chord-window.current { border-color: #00aebb; }
+      .chord-window .win-label {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;
+        text-transform: uppercase; color: #aaa; margin-bottom: 0.3rem;
+      }
+      .chord-window.current .win-label { color: #00aebb; }
+      .chord-window .win-chord-name {
+        font-size: 1.3rem; font-weight: 700; color: #333;
+        margin-bottom: 0.4rem;
+      }
+      .chord-window .win-notes {
+        font-size: 0.78rem; font-family: monospace;
+        background: #eef8fa; color: #555;
+        padding: 0.15rem 0.5rem; border-radius: 4px;
+        display: inline-block; margin-bottom: 0.6rem;
+      }
+      .chord-window .mini-wrap { overflow-x: auto; }
+
       /* ---- Tips ---- */
       .tip-box {
-        background: #fff6f9;
-        border-left: 4px solid #f7c5d3;
-        padding: 0.8rem 1rem;
-        border-radius: 0 8px 8px 0;
-        margin: 1rem 0;
-        font-size: 0.9rem;
+        background: #fff6f9; border-left: 4px solid #f7c5d3;
+        padding: 0.8rem 1rem; border-radius: 0 8px 8px 0;
+        margin: 1rem 0; font-size: 0.9rem;
       }
-
       .tip-box strong { color: #00aebb; }
-
-      .back-link {
-        display: inline-block;
-        margin-bottom: 1.5rem;
-        font-size: 0.9rem;
-      }
-
-      .section-intro {
-        color: #666;
-        font-size: 0.95rem;
-        margin-top: -0.5rem;
-        margin-bottom: 1rem;
-      }
+      .back-link { display: inline-block; margin-bottom: 1.5rem; font-size: 0.9rem; }
+      .section-intro { color: #666; font-size: 0.95rem; margin-top: -0.5rem; margin-bottom: 1rem; }
     </style>
   </head>
   <body>
@@ -191,20 +203,18 @@
 
     <h1>🎹 Acordes y Progresiones de Piano</h1>
     <p class="section-intro">
-      Referencia visual de acordes, progresiones populares y consejos para
-      acompañar canciones. Haz clic en cualquier acorde para ver las notas en el
-      teclado.
+      Referencia visual de acordes y progresiones. Haz clic en cualquier acorde o progresión
+      para ver las notas en el teclado.
     </p>
 
     <hr />
 
-    <!-- TECLADO INTERACTIVO -->
+    <!-- TECLADO INTERACTIVO PRINCIPAL -->
     <h2>🎼 Teclado Interactivo</h2>
     <p class="section-intro">Haz clic en un acorde de la lista para visualizarlo aquí.</p>
 
     <div class="piano-wrap">
       <div class="piano" id="piano">
-        <!-- Octava C4 - B4 -->
         <div class="white-key" data-note="C4">C</div>
         <div class="white-key" data-note="D4">D</div>
         <div class="white-key" data-note="E4">E</div>
@@ -212,7 +222,6 @@
         <div class="white-key" data-note="G4">G</div>
         <div class="white-key" data-note="A4">A</div>
         <div class="white-key" data-note="B4">B</div>
-        <!-- Octava C5 - B5 -->
         <div class="white-key" data-note="C5">C</div>
         <div class="white-key" data-note="D5">D</div>
         <div class="white-key" data-note="E5">E</div>
@@ -220,14 +229,11 @@
         <div class="white-key" data-note="G5">G</div>
         <div class="white-key" data-note="A5">A</div>
         <div class="white-key" data-note="B5">B</div>
-
-        <!-- Negras octava 4 -->
         <div class="black-key bk-1" data-note="Db4"></div>
         <div class="black-key bk-2" data-note="Eb4"></div>
         <div class="black-key bk-4" data-note="Gb4"></div>
         <div class="black-key bk-5" data-note="Ab4"></div>
         <div class="black-key bk-6" data-note="Bb4"></div>
-        <!-- Negras octava 5 (offset 7 * 36 = 252px) -->
         <div class="black-key" style="left: calc(7*36px + 1*36px - 11px)" data-note="Db5"></div>
         <div class="black-key" style="left: calc(7*36px + 2*36px - 11px)" data-note="Eb5"></div>
         <div class="black-key" style="left: calc(7*36px + 4*36px - 11px)" data-note="Gb5"></div>
@@ -235,78 +241,74 @@
         <div class="black-key" style="left: calc(7*36px + 6*36px - 11px)" data-note="Bb5"></div>
       </div>
     </div>
-
     <div id="chord-display" style="text-align:center; color:#00aebb; font-size:0.9rem; min-height:1.4rem; margin-top:0.5rem;"></div>
 
     <hr />
 
     <!-- ACORDES BÁSICOS -->
     <h2>🎵 Acordes Básicos</h2>
-    <p class="section-intro">Los acordes más usados. Haz clic para ver las notas en el teclado.</p>
+    <p class="section-intro">Haz clic en cualquier tarjeta para ver las notas en el teclado.</p>
 
-    <div class="chord-grid" id="chord-grid">
-      <!-- Mayores -->
-      <div class="chord-card" data-chord="C" data-notes="C4,E4,G4" data-label="Do Mayor">
+    <div class="chord-grid">
+      <div class="chord-card" data-notes="C4,E4,G4" data-label="Do Mayor (C)">
         <h3>Do Mayor (C)</h3>
         <span class="notes">C – E – G</span>
         <p class="desc">Alegre, brillante. Base de la tonalidad de Do.</p>
       </div>
-      <div class="chord-card" data-chord="G" data-notes="G4,B4,D5" data-label="Sol Mayor">
+      <div class="chord-card" data-notes="G4,B4,D5" data-label="Sol Mayor (G)">
         <h3>Sol Mayor (G)</h3>
         <span class="notes">G – B – D</span>
         <p class="desc">Cálido y poderoso. Muy común en pop y folk.</p>
       </div>
-      <div class="chord-card" data-chord="F" data-notes="F4,A4,C5" data-label="Fa Mayor">
+      <div class="chord-card" data-notes="F4,A4,C5" data-label="Fa Mayor (F)">
         <h3>Fa Mayor (F)</h3>
         <span class="notes">F – A – C</span>
         <p class="desc">Suave y redondo. Cierra la progresión I-IV-V.</p>
       </div>
-      <div class="chord-card" data-chord="D" data-notes="D4,Gb4,A4" data-label="Re Mayor">
+      <div class="chord-card" data-notes="D4,Gb4,A4" data-label="Re Mayor (D)">
         <h3>Re Mayor (D)</h3>
         <span class="notes">D – F# – A</span>
         <p class="desc">Brillante y enérgico.</p>
       </div>
-      <div class="chord-card" data-chord="A" data-notes="A4,Db5,E5" data-label="La Mayor">
+      <div class="chord-card" data-notes="A4,Db5,E5" data-label="La Mayor (A)">
         <h3>La Mayor (A)</h3>
         <span class="notes">A – C# – E</span>
         <p class="desc">Claro y directo. Dominante natural del Re.</p>
       </div>
-      <div class="chord-card" data-chord="E" data-notes="E4,Ab4,B4" data-label="Mi Mayor">
+      <div class="chord-card" data-notes="E4,Ab4,B4" data-label="Mi Mayor (E)">
         <h3>Mi Mayor (E)</h3>
         <span class="notes">E – G# – B</span>
         <p class="desc">Brillante y tenso. Común en rock y flamenco.</p>
       </div>
-      <!-- Menores -->
-      <div class="chord-card" data-chord="Am" data-notes="A4,C5,E5" data-label="La menor">
+      <div class="chord-card" data-notes="A4,C5,E5" data-label="La menor (Am)">
         <h3>La menor (Am)</h3>
         <span class="notes">A – C – E</span>
         <p class="desc">Melancólico. El menor más básico del piano.</p>
       </div>
-      <div class="chord-card" data-chord="Em" data-notes="E4,G4,B4" data-label="Mi menor">
+      <div class="chord-card" data-notes="E4,G4,B4" data-label="Mi menor (Em)">
         <h3>Mi menor (Em)</h3>
         <span class="notes">E – G – B</span>
         <p class="desc">Oscuro y profundo.</p>
       </div>
-      <div class="chord-card" data-chord="Dm" data-notes="D4,F4,A4" data-label="Re menor">
+      <div class="chord-card" data-notes="D4,F4,A4" data-label="Re menor (Dm)">
         <h3>Re menor (Dm)</h3>
         <span class="notes">D – F – A</span>
         <p class="desc">Triste y dramático. Muy usado en baladas.</p>
       </div>
-      <!-- Séptimas -->
-      <div class="chord-card" data-chord="G7" data-notes="G4,B4,D5,F5" data-label="Sol 7">
+      <div class="chord-card" data-notes="G4,B4,D5,F5" data-label="Sol 7 (G7)">
         <h3>Sol 7 (G7)</h3>
         <span class="notes">G – B – D – F</span>
         <p class="desc">Dominante de Do. Crea tensión que resuelve en C.</p>
       </div>
-      <div class="chord-card" data-chord="Cmaj7" data-notes="C4,E4,G4,B4" data-label="Do Mayor 7">
+      <div class="chord-card" data-notes="C4,E4,G4,B4" data-label="Do Mayor 7 (Cmaj7)">
         <h3>Do Maj7 (Cmaj7)</h3>
         <span class="notes">C – E – G – B</span>
         <p class="desc">Suave y jazzy. Muy usado en bossa nova y soul.</p>
       </div>
-      <div class="chord-card" data-chord="Am7" data-notes="A4,C5,E5,G5" data-label="La menor 7">
+      <div class="chord-card" data-notes="A4,C5,E5,G5" data-label="La menor 7 (Am7)">
         <h3>La m7 (Am7)</h3>
         <span class="notes">A – C – E – G</span>
-        <p class="desc">Suave, melancólico. Muy popular en jazz y R&B.</p>
+        <p class="desc">Suave, melancólico. Popular en jazz y R&B.</p>
       </div>
     </div>
 
@@ -314,9 +316,96 @@
 
     <!-- PROGRESIONES -->
     <h2>🔁 Progresiones Populares</h2>
-    <p class="section-intro">Las progresiones de acordes más usadas en la música moderna. Los números romanos indican el grado de la escala.</p>
+    <p class="section-intro">
+      Haz clic en cualquier fila para ver los acordes en <strong>dos ventanas</strong>
+      — el acorde actual y el siguiente — con navegación paso a paso.
+    </p>
 
-    <table class="prog-table">
+    <!-- VENTANAS DE PROGRESIÓN -->
+    <div id="prog-viewer">
+      <h3 id="pv-title">Progresión</h3>
+      <div class="prog-name" id="pv-subtitle"></div>
+
+      <div class="prog-nav">
+        <button id="btn-prev">← Anterior</button>
+        <span class="prog-counter" id="pv-counter">1 / 4</span>
+        <button id="btn-next">Siguiente →</button>
+      </div>
+
+      <div class="two-windows">
+        <!-- Ventana A: acorde actual -->
+        <div class="chord-window current">
+          <div class="win-label">Acorde actual</div>
+          <div class="win-chord-name" id="win-a-name">—</div>
+          <div class="win-notes" id="win-a-notes">—</div>
+          <div class="mini-wrap">
+            <div class="mini-piano" id="mini-piano-a">
+              <div class="white-key" data-note="C4">C</div>
+              <div class="white-key" data-note="D4">D</div>
+              <div class="white-key" data-note="E4">E</div>
+              <div class="white-key" data-note="F4">F</div>
+              <div class="white-key" data-note="G4">G</div>
+              <div class="white-key" data-note="A4">A</div>
+              <div class="white-key" data-note="B4">B</div>
+              <div class="white-key" data-note="C5">C</div>
+              <div class="white-key" data-note="D5">D</div>
+              <div class="white-key" data-note="E5">E</div>
+              <div class="white-key" data-note="F5">F</div>
+              <div class="white-key" data-note="G5">G</div>
+              <div class="white-key" data-note="A5">A</div>
+              <div class="white-key" data-note="B5">B</div>
+              <div class="black-key bk-1" data-note="Db4"></div>
+              <div class="black-key bk-2" data-note="Eb4"></div>
+              <div class="black-key bk-4" data-note="Gb4"></div>
+              <div class="black-key bk-5" data-note="Ab4"></div>
+              <div class="black-key bk-6" data-note="Bb4"></div>
+              <div class="black-key" style="left: calc(7*28px + 1*28px - 8px)" data-note="Db5"></div>
+              <div class="black-key" style="left: calc(7*28px + 2*28px - 8px)" data-note="Eb5"></div>
+              <div class="black-key" style="left: calc(7*28px + 4*28px - 8px)" data-note="Gb5"></div>
+              <div class="black-key" style="left: calc(7*28px + 5*28px - 8px)" data-note="Ab5"></div>
+              <div class="black-key" style="left: calc(7*28px + 6*28px - 8px)" data-note="Bb5"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ventana B: acorde siguiente -->
+        <div class="chord-window">
+          <div class="win-label">Siguiente acorde</div>
+          <div class="win-chord-name" id="win-b-name">—</div>
+          <div class="win-notes" id="win-b-notes">—</div>
+          <div class="mini-wrap">
+            <div class="mini-piano" id="mini-piano-b">
+              <div class="white-key" data-note="C4">C</div>
+              <div class="white-key" data-note="D4">D</div>
+              <div class="white-key" data-note="E4">E</div>
+              <div class="white-key" data-note="F4">F</div>
+              <div class="white-key" data-note="G4">G</div>
+              <div class="white-key" data-note="A4">A</div>
+              <div class="white-key" data-note="B4">B</div>
+              <div class="white-key" data-note="C5">C</div>
+              <div class="white-key" data-note="D5">D</div>
+              <div class="white-key" data-note="E5">E</div>
+              <div class="white-key" data-note="F5">F</div>
+              <div class="white-key" data-note="G5">G</div>
+              <div class="white-key" data-note="A5">A</div>
+              <div class="white-key" data-note="B5">B</div>
+              <div class="black-key bk-1" data-note="Db4"></div>
+              <div class="black-key bk-2" data-note="Eb4"></div>
+              <div class="black-key bk-4" data-note="Gb4"></div>
+              <div class="black-key bk-5" data-note="Ab4"></div>
+              <div class="black-key bk-6" data-note="Bb4"></div>
+              <div class="black-key" style="left: calc(7*28px + 1*28px - 8px)" data-note="Db5"></div>
+              <div class="black-key" style="left: calc(7*28px + 2*28px - 8px)" data-note="Eb5"></div>
+              <div class="black-key" style="left: calc(7*28px + 4*28px - 8px)" data-note="Gb5"></div>
+              <div class="black-key" style="left: calc(7*28px + 5*28px - 8px)" data-note="Ab5"></div>
+              <div class="black-key" style="left: calc(7*28px + 6*28px - 8px)" data-note="Bb5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="prog-table" id="prog-table">
       <thead>
         <tr>
           <th>Progresión</th>
@@ -326,61 +415,61 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr data-prog="I – IV – V" data-chords="C,F,G">
           <td><span class="prog-tag">I – IV – V</span></td>
           <td>C – F – G</td>
           <td><span class="genre-badge">Rock</span> <span class="genre-badge">Blues</span> <span class="genre-badge">Country</span></td>
           <td>Clásico, energético, resolutivo</td>
         </tr>
-        <tr>
+        <tr data-prog="I – V – vi – IV" data-chords="C,G,Am,F">
           <td><span class="prog-tag">I – V – vi – IV</span></td>
           <td>C – G – Am – F</td>
           <td><span class="genre-badge">Pop</span> <span class="genre-badge">Balada</span></td>
           <td>Épico, emotivo — miles de canciones</td>
         </tr>
-        <tr>
+        <tr data-prog="vi – IV – I – V" data-chords="Am,F,C,G">
           <td><span class="prog-tag">vi – IV – I – V</span></td>
           <td>Am – F – C – G</td>
           <td><span class="genre-badge">Pop</span> <span class="genre-badge">Indie</span></td>
           <td>Melancólico pero esperanzador</td>
         </tr>
-        <tr>
+        <tr data-prog="I – vi – IV – V" data-chords="C,Am,F,G">
           <td><span class="prog-tag">I – vi – IV – V</span></td>
           <td>C – Am – F – G</td>
           <td><span class="genre-badge">Doo-wop</span> <span class="genre-badge">50s</span> <span class="genre-badge">Pop</span></td>
           <td>Nostálgico, romántico</td>
         </tr>
-        <tr>
+        <tr data-prog="ii – V – I" data-chords="Dm,G,C">
           <td><span class="prog-tag">ii – V – I</span></td>
           <td>Dm – G – C</td>
           <td><span class="genre-badge">Jazz</span> <span class="genre-badge">Bossa</span></td>
           <td>Tensión-resolución perfecta del jazz</td>
         </tr>
-        <tr>
+        <tr data-prog="I – IV – vi – V" data-chords="C,F,Am,G">
           <td><span class="prog-tag">I – IV – vi – V</span></td>
           <td>C – F – Am – G</td>
           <td><span class="genre-badge">Pop</span> <span class="genre-badge">Soul</span></td>
           <td>Fluido y melódico</td>
         </tr>
-        <tr>
+        <tr data-prog="i – VII – VI – VII" data-chords="Am,G,F,G">
           <td><span class="prog-tag">i – VII – VI – VII</span></td>
           <td>Am – G – F – G</td>
           <td><span class="genre-badge">Rock</span> <span class="genre-badge">Metal</span></td>
           <td>Oscuro y poderoso (menor natural)</td>
         </tr>
-        <tr>
+        <tr data-prog="I – III – IV – iv" data-chords="C,E,F,Fm">
           <td><span class="prog-tag">I – III – IV – iv</span></td>
           <td>C – E – F – Fm</td>
           <td><span class="genre-badge">Soul</span> <span class="genre-badge">R&B</span></td>
           <td>Suave con toque dramático</td>
         </tr>
-        <tr>
+        <tr data-prog="I – V – vi – iii – IV (Pachelbel)" data-chords="C,G,Am,Em,F">
           <td><span class="prog-tag">I – V – vi – iii – IV</span></td>
           <td>C – G – Am – Em – F</td>
           <td><span class="genre-badge">Clásico</span> <span class="genre-badge">Pop</span></td>
           <td>Canon de Pachelbel — circular y eterno</td>
         </tr>
-        <tr>
+        <tr data-prog="Blues 12 compases" data-chords="C,C,C,C,F,F,C,C,G,F,C,G">
           <td><span class="prog-tag">12 compases blues</span></td>
           <td>C C C C / F F C C / G F C G</td>
           <td><span class="genre-badge">Blues</span> <span class="genre-badge">Rock</span></td>
@@ -391,21 +480,15 @@
 
     <hr />
 
-    <!-- ESCALA DE TONALIDADES -->
+    <!-- ACORDES POR TONALIDAD -->
     <h2>🎯 Acordes por Tonalidad</h2>
     <p class="section-intro">Los 7 acordes diatónicos de cada tonalidad mayor.</p>
 
     <table class="prog-table">
       <thead>
         <tr>
-          <th>Tonalidad</th>
-          <th>I</th>
-          <th>ii</th>
-          <th>iii</th>
-          <th>IV</th>
-          <th>V</th>
-          <th>vi</th>
-          <th>vii°</th>
+          <th>Tonalidad</th><th>I</th><th>ii</th><th>iii</th>
+          <th>IV</th><th>V</th><th>vi</th><th>vii°</th>
         </tr>
       </thead>
       <tbody>
@@ -429,12 +512,12 @@
       Ej: C/E (Do con Mi en el bajo) suena más fluido al pasar de Am a C.
     </div>
     <div class="tip-box">
-      <strong>Voicing amplio:</strong> Separa el bajo (mano izquierda) y las notas superiores (mano derecha)
-      para un sonido más rico. Ej: C grave + E G C arriba.
+      <strong>Voicing amplio:</strong> Separa el bajo (mano izquierda) y las notas superiores (mano derecha).
+      Ej: C grave + E G C arriba.
     </div>
     <div class="tip-box">
-      <strong>Regla del I-IV-V:</strong> En <em>cualquier</em> tonalidad, los acordes I, IV y V son
-      mayores y entre los tres puedes acompañar casi cualquier canción.
+      <strong>Regla del I-IV-V:</strong> En cualquier tonalidad, los acordes I, IV y V son mayores
+      y entre los tres puedes acompañar casi cualquier canción.
     </div>
     <div class="tip-box">
       <strong>Círculo de quintas:</strong> C → G → D → A → E → B → F# → Db → Ab → Eb → Bb → F → C.
@@ -453,47 +536,137 @@
     </p>
 
     <script>
+      // ---- Notas por acorde ----
       const CHORD_NOTES = {
-        C:      ['C4','E4','G4'],
-        G:      ['G4','B4','D5'],
-        F:      ['F4','A4','C5'],
-        D:      ['D4','Gb4','A4'],
-        A:      ['A4','Db5','E5'],
-        E:      ['E4','Ab4','B4'],
-        Am:     ['A4','C5','E5'],
-        Em:     ['E4','G4','B4'],
-        Dm:     ['D4','F4','A4'],
-        G7:     ['G4','B4','D5','F5'],
-        Cmaj7:  ['C4','E4','G4','B4'],
-        Am7:    ['A4','C5','E5','G5'],
+        C:    ['C4','E4','G4'],
+        G:    ['G4','B4','D5'],
+        F:    ['F4','A4','C5'],
+        D:    ['D4','Gb4','A4'],
+        A:    ['A4','Db5','E5'],
+        E:    ['E4','Ab4','B4'],
+        Am:   ['A4','C5','E5'],
+        Em:   ['E4','G4','B4'],
+        Dm:   ['D4','F4','A4'],
+        Fm:   ['F4','Ab4','C5'],
+        G7:   ['G4','B4','D5','F5'],
+        Cmaj7:['C4','E4','G4','B4'],
+        Am7:  ['A4','C5','E5','G5'],
+        Gm:   ['G4','Bb4','D5'],
+        Bb:   ['Bb4','D5','F5'],
+        Cm:   ['C5','Eb5','G5'],
+        Eb:   ['Eb4','G4','Bb4'],
+        Bm:   ['B4','D5','Gb5'],
       };
 
-      function highlightNotes(noteList) {
-        document.querySelectorAll('.white-key, .black-key').forEach(k => k.classList.remove('active'));
+      // ---- Teclado principal (acordes básicos) ----
+      function highlightMain(noteList) {
+        document.querySelectorAll('#piano .white-key, #piano .black-key')
+          .forEach(k => k.classList.remove('active'));
         noteList.forEach(note => {
-          const key = document.querySelector(`[data-note="${note}"]`);
+          const key = document.querySelector(`#piano [data-note="${note}"]`);
           if (key) key.classList.add('active');
         });
       }
 
-      // Chord cards click
       document.querySelectorAll('.chord-card').forEach(card => {
         card.addEventListener('click', () => {
           const notes = card.dataset.notes.split(',');
           const label = card.dataset.label;
-          highlightNotes(notes);
+          highlightMain(notes);
           document.getElementById('chord-display').textContent =
             `${label}: ${notes.join(' – ')}`;
-          // scroll to piano
           document.querySelector('.piano-wrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
       });
 
-      // Manual key clicks
-      document.querySelectorAll('.white-key, .black-key').forEach(key => {
-        key.addEventListener('click', (e) => {
+      document.querySelectorAll('#piano .white-key, #piano .black-key').forEach(key => {
+        key.addEventListener('click', e => {
           e.stopPropagation();
           key.classList.toggle('active');
+        });
+      });
+
+      // ---- Visor de progresiones (dos ventanas) ----
+      let progChords = [];
+      let progIdx = 0;
+
+      function highlightMini(pianoId, noteList) {
+        document.querySelectorAll(`#${pianoId} .white-key, #${pianoId} .black-key`)
+          .forEach(k => k.classList.remove('active'));
+        if (!noteList) return;
+        noteList.forEach(note => {
+          const key = document.querySelector(`#${pianoId} [data-note="${note}"]`);
+          if (key) key.classList.add('active');
+        });
+      }
+
+      function chordDisplayName(name) {
+        const map = {
+          C:'Do (C)', G:'Sol (G)', F:'Fa (F)', D:'Re (D)', A:'La (A)', E:'Mi (E)',
+          Am:'La m (Am)', Em:'Mi m (Em)', Dm:'Re m (Dm)', Fm:'Fa m (Fm)',
+          G7:'Sol 7 (G7)', Cmaj7:'Do Maj7', Am7:'La m7 (Am7)',
+          Gm:'Sol m (Gm)', Bb:'Sib (Bb)', Cm:'Do m (Cm)', Eb:'Mib (Eb)',
+          Bm:'Si m (Bm)',
+        };
+        return map[name] || name;
+      }
+
+      function renderProgViewer() {
+        const total = progChords.length;
+        const idxA = progIdx;
+        const idxB = (progIdx + 1) % total;
+
+        const nameA = progChords[idxA];
+        const nameB = progChords[idxB];
+        const notesA = CHORD_NOTES[nameA] || [];
+        const notesB = CHORD_NOTES[nameB] || [];
+
+        document.getElementById('pv-counter').textContent = `${idxA + 1} / ${total}`;
+        document.getElementById('btn-prev').disabled = false;
+        document.getElementById('btn-next').disabled = false;
+
+        document.getElementById('win-a-name').textContent = chordDisplayName(nameA);
+        document.getElementById('win-a-notes').textContent = notesA.map(n => n.replace(/\d/,'')).join(' – ') || '—';
+        highlightMini('mini-piano-a', notesA);
+
+        document.getElementById('win-b-name').textContent = chordDisplayName(nameB);
+        document.getElementById('win-b-notes').textContent = notesB.map(n => n.replace(/\d/,'')).join(' – ') || '—';
+        highlightMini('mini-piano-b', notesB);
+
+        // También iluminar en teclado principal
+        highlightMain(notesA);
+        document.getElementById('chord-display').textContent =
+          `${chordDisplayName(nameA)}: ${notesA.join(' – ')}`;
+      }
+
+      document.getElementById('btn-prev').addEventListener('click', () => {
+        progIdx = (progIdx - 1 + progChords.length) % progChords.length;
+        renderProgViewer();
+      });
+
+      document.getElementById('btn-next').addEventListener('click', () => {
+        progIdx = (progIdx + 1) % progChords.length;
+        renderProgViewer();
+      });
+
+      document.querySelectorAll('#prog-table tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+          // quitar selección anterior
+          document.querySelectorAll('#prog-table tbody tr').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+
+          progChords = row.dataset.chords.split(',');
+          progIdx = 0;
+
+          document.getElementById('pv-title').textContent = row.dataset.prog;
+          document.getElementById('pv-subtitle').textContent =
+            'En Do Mayor: ' + progChords.join(' – ');
+
+          const viewer = document.getElementById('prog-viewer');
+          viewer.style.display = 'block';
+          viewer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+          renderProgViewer();
         });
       });
     </script>
